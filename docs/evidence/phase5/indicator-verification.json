@@ -1,0 +1,79 @@
+{
+  "period": {
+    "start": "2024-01-01",
+    "end": "2024-12-31"
+  },
+  "days": 366,
+  "groups_checked": 42,
+  "indicators_checked": 252,
+  "differences_checked": 18,
+  "sources": {
+    "arequipa-chivay": {
+      "response_sha256": "78f822233a029a8b870290c743e4c20d3b889a8cb13eb841efb832ebd5486eca",
+      "csv_sha256": "4a9e6ee34d68c914c5fe033030db8896eb5fc30d696750a6dbdd9e078bdba53e",
+      "fetched_at_utc": "2026-11-22T05:05:29.862235Z"
+    },
+    "cusco-urubamba": {
+      "response_sha256": "663c7697d7f19078b41bc77655fa994c3f2b999378b671df68a2a4dbacad5b71",
+      "csv_sha256": "01b9700d566f7306e2ec7310d6457fe42e51b7fb77d5736ca43ec4c5c1247d06",
+      "fetched_at_utc": "2026-11-22T05:05:30.964104Z"
+    },
+    "puno-ilave": {
+      "response_sha256": "3e959c2527430ecd84da1509c96bb2797bcf0224a5498af25740d8082e4ac32c",
+      "csv_sha256": "355f4a1b2ed95edcf1d8f1ed08606ecdaf78be91a650096c44fe07aff5ae4f9c",
+      "fetched_at_utc": "2026-11-22T05:05:32.139533Z"
+    }
+  },
+  "period_indicators": {
+    "arequipa-chivay": {
+      "mean_temperature": 7.5,
+      "min_temperature": -5.3,
+      "max_temperature": 21.3,
+      "accumulated_precipitation": 186.8,
+      "potential_frost_days": 123.0,
+      "rainy_days": 53.0
+    },
+    "cusco-urubamba": {
+      "mean_temperature": 9.5,
+      "min_temperature": -3.1,
+      "max_temperature": 21.1,
+      "accumulated_precipitation": 706.2,
+      "potential_frost_days": 5.0,
+      "rainy_days": 116.0
+    },
+    "puno-ilave": {
+      "mean_temperature": 10.2,
+      "min_temperature": 0.4,
+      "max_temperature": 19.4,
+      "accumulated_precipitation": 541.2,
+      "potential_frost_days": 0.0,
+      "rainy_days": 109.0
+    }
+  },
+  "period_differences": {
+    "arequipa-chivay - cusco-urubamba": {
+      "mean_temperature": -2.0,
+      "min_temperature": -2.3,
+      "max_temperature": 0.2,
+      "accumulated_precipitation": -519.4,
+      "potential_frost_days": 118.0,
+      "rainy_days": -63.0
+    },
+    "arequipa-chivay - puno-ilave": {
+      "mean_temperature": -2.8,
+      "min_temperature": -5.8,
+      "max_temperature": 1.9,
+      "accumulated_precipitation": -354.4,
+      "potential_frost_days": 123.0,
+      "rainy_days": -56.0
+    },
+    "cusco-urubamba - puno-ilave": {
+      "mean_temperature": -0.7,
+      "min_temperature": -3.5,
+      "max_temperature": 1.7,
+      "accumulated_precipitation": 165.0,
+      "potential_frost_days": 5.0,
+      "rainy_days": 7.0
+    }
+  }
+}

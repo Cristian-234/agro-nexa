@@ -1,0 +1,17 @@
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.py[cod]
+*.sqlite*
+*.db
+node_modules/
+dist/
+coverage/
+data/cache/
+.power-probe.json
+.npm-cache/
+.python/
+.venv311/
+.uv-cache/

@@ -1,0 +1,240 @@
+{
+  "schema": "agronexa.agronomic-review-draft.v1",
+  "version": "papa-quinua-ilave-borrador-01",
+  "status": "draft",
+  "reviewed_on": null,
+  "importable": false,
+  "scope": {
+    "location_id": "puno-ilave",
+    "district": "Ilave",
+    "province": "El Collao",
+    "region": "Puno",
+    "previous_crop_id": "potato",
+    "crop_id": "quinoa",
+    "cultivar_reference": "Illpa INIA",
+    "cultivar_confirmed": false
+  },
+  "sources": {
+    "inia-illpa-2013": {
+      "title": "Quinua ILLPA INIA",
+      "institution": "INIA — Estación Experimental Agraria Illpa, Puno",
+      "issued": "2013-01",
+      "url": "https://repositorio.inia.gob.pe/handle/20.500.12955/79",
+      "document_url": "https://repositorio.inia.gob.pe/server/api/core/bitstreams/f54987cb-69c8-49dc-8cd0-d61677366c8d/content"
+    },
+    "inia-papa": {
+      "title": "Manual técnico: Manejo integrado del cultivo de papa",
+      "institution": "INIA",
+      "url": "https://repositorio.inia.gob.pe/handle/20.500.12955/1146",
+      "document_url": "https://repositorio.inia.gob.pe/bitstream/20.500.12955/1146/1/MANUAL%20T%C3%89CNICO%20-%20MANEJO%20INTEGRADO%20DEL%20CULTIVO%20DE%20PAPA.pdf"
+    },
+    "inia-quinua-variedades": {
+      "title": "Catálogo de variedades comerciales de quinua en el Perú",
+      "institution": "INIA y FAO",
+      "url": "https://repositorio.inia.gob.pe/server/api/core/bitstreams/06b66d94-b8d6-432c-b29c-42b5db9de9fb/content"
+    },
+    "inia-quinua-cusco": {
+      "title": "Manejo integrado del cultivo de quinua en el Cusco",
+      "institution": "INIA — Estación Experimental Agraria Andenes",
+      "issued": "2018-10",
+      "url": "https://repositorio.inia.gob.pe/handle/20.500.12955/926",
+      "scope": "Cusco; antecedente complementario para la revisión de Ilave"
+    }
+  },
+  "local_evidence": {
+    "source_id": "inia-illpa-2013",
+    "section": "Rendimiento de validación, p. 1 del PDF adjunto",
+    "sites": [
+      {
+        "name": "Yuncuta",
+        "campaign": "1995–96"
+      },
+      {
+        "name": "Churo",
+        "campaign": "1996–97"
+      }
+    ],
+    "limitation": "La tabla documenta antecedentes del cultivar en el distrito. No identifica allí una comparación controlada entre secuencias ni las condiciones de cada parcela de la ficha."
+  },
+  "candidates": [
+    {
+      "id": "antecedente-papa",
+      "criterion": "Confirmar la secuencia papa → quinua en el mismo lote",
+      "evidence": [
+        {
+          "source_id": "inia-illpa-2013",
+          "section": "Manejo del cultivo — Rotación, p. 2 del PDF adjunto"
+        },
+        {
+          "source_id": "inia-papa",
+          "section": "§6.1.2 y figura 11, p. 18 impresa (p. 11 del PDF adjunto)"
+        },
+        {
+          "source_id": "inia-quinua-cusco",
+          "section": "§7, p. 14 impresa (p. 16 del PDF adjunto)",
+          "role": "Contexto complementario de rotación con tuberosas en Cusco"
+        }
+      ],
+      "published_reference": {
+        "previous_crop_id": "potato"
+      },
+      "candidate_input": "previous_crop",
+      "limitation": "El antecedente de papa sirve para delimitar la secuencia. No prueba aptitud por sí solo.",
+      "advisor_review": "Confirmar el antecedente del lote. Mantenerlo como condición de aplicabilidad mediante previous_crop_id, sin duplicarlo como puntaje.",
+      "status": "draft",
+      "predicate": null,
+      "weight": null,
+      "critical": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "ph-medido",
+      "criterion": "Contrastar el pH de la parcela con la adaptación descrita",
+      "evidence": [
+        {
+          "source_id": "inia-illpa-2013",
+          "section": "Adaptación agroecológica — pH de suelo, p. 1 del PDF adjunto"
+        },
+        {
+          "source_id": "inia-quinua-variedades",
+          "section": "Illpa INIA — 1. Datos generales, Adaptación, p. 38"
+        }
+      ],
+      "published_reference": {
+        "range": [
+          5.5,
+          8
+        ],
+        "unit": "pH",
+        "kind": "rango descriptivo de adaptación del cultivar"
+      },
+      "candidate_input": "soil_ph",
+      "limitation": "La referencia corresponde a Illpa INIA y no define un límite de exclusión para una parcela de Ilave.",
+      "advisor_review": "Confirmar cultivar, representatividad y método de la medición. Decidir si el rango se usará como referencia descriptiva o si hay respaldo para un predicado local.",
+      "status": "draft",
+      "predicate": null,
+      "weight": null,
+      "critical": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "textura-de-parcela",
+      "criterion": "Identificar la textura de la parcela",
+      "evidence": [
+        {
+          "source_id": "inia-illpa-2013",
+          "section": "Adaptación agroecológica — Textura del suelo, p. 1 del PDF adjunto"
+        },
+        {
+          "source_id": "inia-quinua-variedades",
+          "section": "Illpa INIA — 1. Datos generales, Adaptación, p. 38"
+        },
+        {
+          "source_id": "inia-quinua-cusco",
+          "section": "§8, p. 14 impresa (p. 16 del PDF adjunto)",
+          "role": "Contexto complementario de textura franca y drenaje en Cusco"
+        }
+      ],
+      "published_reference": {
+        "categories": [
+          "franco",
+          "franco arenoso"
+        ],
+        "kind": "texturas descritas para la adaptación del cultivar"
+      },
+      "candidate_input": "soil_texture",
+      "limitation": "La ficha actual no distingue franco arenoso y el motor solo admite una igualdad para textura. Arenoso no equivale a franco arenoso.",
+      "advisor_review": "Confirmar clase textural y cómo representar ambas categorías antes de incorporar un criterio evaluable. Revisar por separado el drenaje observado en campo.",
+      "status": "draft",
+      "predicate": null,
+      "weight": null,
+      "critical": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "humedad-de-establecimiento",
+      "criterion": "Verificar humedad del suelo en el establecimiento",
+      "evidence": [
+        {
+          "source_id": "inia-illpa-2013",
+          "section": "Manejo del cultivo — Sistema de producción y Época de siembra, p. 2 del PDF adjunto"
+        }
+      ],
+      "published_reference": {
+        "system": "secano",
+        "condition": "humedad del suelo al momento de la siembra"
+      },
+      "candidate_input": null,
+      "limitation": "El texto describe un sistema de secano. La disponibilidad declarada de riego y la precipitación de una celda no miden humedad de parcela.",
+      "advisor_review": "Definir observación de campo y ventana de establecimiento. La ficha actual no registra humedad del suelo.",
+      "status": "draft",
+      "predicate": null,
+      "weight": null,
+      "critical": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "precipitacion-de-referencia",
+      "criterion": "Aclarar la ventana temporal de la precipitación publicada",
+      "evidence": [
+        {
+          "source_id": "inia-illpa-2013",
+          "section": "Adaptación agroecológica — Precipitación, p. 1 del PDF adjunto"
+        },
+        {
+          "source_id": "inia-quinua-variedades",
+          "section": "Illpa INIA — 1. Datos generales, Adaptación, p. 38"
+        }
+      ],
+      "published_reference": {
+        "range": [
+          450,
+          600
+        ],
+        "unit": "mm",
+        "window": null,
+        "kind": "descripción de adaptación del cultivar"
+      },
+      "candidate_input": "accumulated_precipitation",
+      "limitation": "Las secciones citadas no explicitan la ventana de acumulación. No se puede equiparar el rango con el acumulado anual o de campaña de NASA POWER.",
+      "advisor_review": "Identificar periodo, origen y método del valor en una fuente pertinente. Confirmar una comparación temporalmente equivalente antes de formular la condición.",
+      "status": "draft",
+      "predicate": null,
+      "weight": null,
+      "critical": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "temperatura-de-referencia",
+      "criterion": "Identificar el estadístico y periodo de la temperatura publicada",
+      "evidence": [
+        {
+          "source_id": "inia-illpa-2013",
+          "section": "Adaptación agroecológica — Temperatura, p. 1 del PDF adjunto"
+        },
+        {
+          "source_id": "inia-quinua-variedades",
+          "section": "Illpa INIA — 1. Datos generales, Adaptación, p. 38"
+        }
+      ],
+      "published_reference": {
+        "range": [
+          4,
+          15
+        ],
+        "unit": "degC",
+        "statistic": null,
+        "window": null,
+        "kind": "descripción de adaptación del cultivar"
+      },
+      "candidate_input": null,
+      "limitation": "Las secciones citadas no precisan estadístico ni periodo. El intervalo no sirve como umbral de helada ni se asigna a la media, mínima o máxima de NASA POWER.",
+      "advisor_review": "Confirmar estadístico, ventana temporal y aplicabilidad a la parcela antes de elegir variable u operador.",
+      "status": "draft",
+      "predicate": null,
+      "weight": null,
+      "critical": null,
+      "reviewed_on": null
+    }
+  ]
+}

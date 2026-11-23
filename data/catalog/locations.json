@@ -1,0 +1,29 @@
+[
+  {
+    "id": "puno-ilave",
+    "name": "Ilave",
+    "region": "Puno",
+    "latitude": -16.09,
+    "longitude": -69.64,
+    "coordinate_source": "INEI, Directorio Nacional de Municipalidades 2022, tabla 21.3. https://www.inei.gob.pe/media/MenuRecursivo/publicaciones_digitales/Est/Lib1856/libro.pdf",
+    "verified": true
+  },
+  {
+    "id": "cusco-urubamba",
+    "name": "Urubamba",
+    "region": "Cusco",
+    "latitude": -13.30,
+    "longitude": -72.12,
+    "coordinate_source": "Municipalidad Provincial de Urubamba, Memoria Anual 2024, ficha de coordenadas. https://cdn.www.gob.pe/uploads/document/file/8096510/6787662-memoria-anual-2024-_1.pdf?v=1747833983",
+    "verified": true
+  },
+  {
+    "id": "arequipa-chivay",
+    "name": "Chivay",
+    "region": "Arequipa",
+    "latitude": -15.64,
+    "longitude": -71.60,
+    "coordinate_source": "INEI, Directorio Nacional de Municipalidades 2022, p. 115. https://www.inei.gob.pe/media/MenuRecursivo/publicaciones_digitales/Est/Lib1856/libro.pdf",
+    "verified": true
+  }
+]

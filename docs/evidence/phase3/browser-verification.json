@@ -1,0 +1,78 @@
+{
+  "browser_version": "158.0.4370.33",
+  "period": {
+    "start": "2024-01-01",
+    "end": "2024-12-31"
+  },
+  "nasa_runs": [
+    {
+      "location_id": "arequipa-chivay",
+      "http_status": 200,
+      "fetched_at": "2026-11-22T04:13:00.644856Z",
+      "response_sha256": "94459a84c8152fa1f02beb73d881a883a242f50e8059ecbad19c9fabf1eca992",
+      "csv_sha256": "6f9eb75daf25304dfb4a7a42e62bb721eea2b1a119f72f056bf2227f984a403b",
+      "coverage_pct_by_variable": {
+        "t2m": 100,
+        "t2m_min": 100,
+        "t2m_max": 100,
+        "prectotcorr": 100
+      }
+    },
+    {
+      "location_id": "cusco-urubamba",
+      "http_status": 200,
+      "fetched_at": "2026-11-22T04:13:04.163350Z",
+      "response_sha256": "1eb9f9311f3c2d5c2fbbc11a9835d0ce2780f4e710b1f33d17003c4d6a9bddfc",
+      "csv_sha256": "cb51117380478620bf9b4b5036c799ed1768280df31293a6028ab40e56192898",
+      "coverage_pct_by_variable": {
+        "t2m": 100,
+        "t2m_min": 100,
+        "t2m_max": 100,
+        "prectotcorr": 100
+      }
+    },
+    {
+      "location_id": "puno-ilave",
+      "http_status": 200,
+      "fetched_at": "2026-11-22T04:13:07.016240Z",
+      "response_sha256": "03e5dda7efa047a09b12551cb48e74fb2a01cf0fe9ee0e3099f84f071379382b",
+      "csv_sha256": "d37f314692b4a478e852080b63cb2fb3aa53487d997ee53ce24d8fbd194fa450",
+      "coverage_pct_by_variable": {
+        "t2m": 100,
+        "t2m_min": 100,
+        "t2m_max": 100,
+        "prectotcorr": 100
+      }
+    }
+  ],
+  "viewports": [
+    {
+      "width_px": 360,
+      "base_map_tiles_loaded": 6,
+      "daily_rows": 366,
+      "monthly_groups_per_location": 12,
+      "comparisons": 3,
+      "csv_sha256": "d37f314692b4a478e852080b63cb2fb3aa53487d997ee53ce24d8fbd194fa450",
+      "horizontal_overflow": false
+    },
+    {
+      "width_px": 768,
+      "base_map_tiles_loaded": 6,
+      "daily_rows": 366,
+      "monthly_groups_per_location": 12,
+      "comparisons": 3,
+      "csv_sha256": "d37f314692b4a478e852080b63cb2fb3aa53487d997ee53ce24d8fbd194fa450",
+      "horizontal_overflow": false
+    },
+    {
+      "width_px": 1440,
+      "base_map_tiles_loaded": 8,
+      "daily_rows": 366,
+      "monthly_groups_per_location": 12,
+      "comparisons": 3,
+      "csv_sha256": "d37f314692b4a478e852080b63cb2fb3aa53487d997ee53ce24d8fbd194fa450",
+      "horizontal_overflow": false
+    }
+  ],
+  "map_fallback": true
+}

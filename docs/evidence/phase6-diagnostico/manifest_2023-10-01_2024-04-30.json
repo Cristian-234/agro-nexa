@@ -1,0 +1,121 @@
+{
+  "generated_at_utc": "2026-11-23T16:11:40.399019+00:00",
+  "period": {
+    "start": "2023-10-01",
+    "end": "2024-04-30"
+  },
+  "results": [
+    {
+      "location_id": "puno-ilave",
+      "status": "ok",
+      "csv": "puno-ilave_2023-10-01_2024-04-30.csv",
+      "csv_sha256": "d2945983d690f600bb7256930b853e96659506a88b86e7e7dac707cbd308b5d2",
+      "source": {
+        "provider": "NASA POWER",
+        "product": "daily point",
+        "version": "v2.10.5",
+        "fetched_at": "2026-11-23T16:11:40.251257Z",
+        "cache_status": "fresh",
+        "cache_age_seconds": 0,
+        "time_standard": "LST",
+        "resolution": "0,5° latitud × 0,625° longitud (malla meteorológica MERRA-2)",
+        "documentation_url": "https://power.larc.nasa.gov/docs/services/api/temporal/daily/",
+        "response_sha256": "532d516de062f32cbb9a29fe4b51a136d34bae01b05574d5f447744dd5e7cbea",
+        "metadata": {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -69.64,
+              -16.09,
+              3904.46
+            ]
+          },
+          "header": {
+            "title": "NASA/POWER Source Native Resolution Daily Data",
+            "api": {
+              "version": "v2.10.5",
+              "name": "POWER Daily API"
+            },
+            "sources": [
+              "MERRA2",
+              "POWER"
+            ],
+            "fill_value": -999.0,
+            "time_standard": "LST",
+            "start": "20231001",
+            "end": "20240430"
+          },
+          "messages": [],
+          "parameters": {
+            "T2M": {
+              "units": "C",
+              "longname": "Temperature at 2 Meters"
+            },
+            "T2M_MIN": {
+              "units": "C",
+              "longname": "Temperature at 2 Meters Minimum"
+            },
+            "T2M_MAX": {
+              "units": "C",
+              "longname": "Temperature at 2 Meters Maximum"
+            },
+            "PRECTOTCORR": {
+              "units": "mm/day",
+              "longname": "Precipitation Corrected"
+            }
+          },
+          "times": {
+            "data": 0.382,
+            "process": 0.01
+          },
+          "properties": {},
+          "request": {
+            "parameters": "T2M,T2M_MIN,T2M_MAX,PRECTOTCORR",
+            "community": "AG",
+            "longitude": -69.64,
+            "latitude": -16.09,
+            "start": "20231001",
+            "end": "20240430",
+            "format": "JSON",
+            "time-standard": "LST"
+          },
+          "request_url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M%2CT2M_MIN%2CT2M_MAX%2CPRECTOTCORR&community=AG&longitude=-69.64&latitude=-16.09&start=20231001&end=20240430&format=JSON&time-standard=LST",
+          "http_status": 200
+        }
+      },
+      "units": {
+        "t2m": "degC",
+        "t2m_min": "degC",
+        "t2m_max": "degC",
+        "prectotcorr": "mm/day"
+      },
+      "quality": {
+        "expected_days": 213,
+        "valid_days_by_variable": {
+          "t2m": 213,
+          "t2m_min": 213,
+          "t2m_max": 213,
+          "prectotcorr": 213
+        },
+        "coverage_pct_by_variable": {
+          "t2m": 100.0,
+          "t2m_min": 100.0,
+          "t2m_max": 100.0,
+          "prectotcorr": 100.0
+        }
+      },
+      "warnings": [
+        "La serie representa una celda de NASA POWER. LST es tiempo solar local."
+      ],
+      "sample": {
+        "date": "2023-10-01",
+        "t2m": 10.63,
+        "t2m_min": 7.08,
+        "t2m_max": 14.69,
+        "prectotcorr": 1.12,
+        "quality_flags": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,240 @@
+{
+  "browser_version": "158.0.4370.33",
+  "period": {
+    "start": "2024-01-01",
+    "end": "2024-12-31"
+  },
+  "nasa_runs": [
+    {
+      "location_id": "arequipa-chivay",
+      "http_status": 200,
+      "fetched_at": "2026-11-22T05:05:29.862235Z",
+      "response_sha256": "78f822233a029a8b870290c743e4c20d3b889a8cb13eb841efb832ebd5486eca",
+      "csv_sha256": "4a9e6ee34d68c914c5fe033030db8896eb5fc30d696750a6dbdd9e078bdba53e",
+      "coverage_pct_by_variable": {
+        "t2m": 100,
+        "t2m_min": 100,
+        "t2m_max": 100,
+        "prectotcorr": 100
+      }
+    },
+    {
+      "location_id": "cusco-urubamba",
+      "http_status": 200,
+      "fetched_at": "2026-11-22T05:05:30.964104Z",
+      "response_sha256": "663c7697d7f19078b41bc77655fa994c3f2b999378b671df68a2a4dbacad5b71",
+      "csv_sha256": "01b9700d566f7306e2ec7310d6457fe42e51b7fb77d5736ca43ec4c5c1247d06",
+      "coverage_pct_by_variable": {
+        "t2m": 100,
+        "t2m_min": 100,
+        "t2m_max": 100,
+        "prectotcorr": 100
+      }
+    },
+    {
+      "location_id": "puno-ilave",
+      "http_status": 200,
+      "fetched_at": "2026-11-22T05:05:32.139533Z",
+      "response_sha256": "3e959c2527430ecd84da1509c96bb2797bcf0224a5498af25740d8082e4ac32c",
+      "csv_sha256": "355f4a1b2ed95edcf1d8f1ed08606ecdaf78be91a650096c44fe07aff5ae4f9c",
+      "coverage_pct_by_variable": {
+        "t2m": 100,
+        "t2m_min": 100,
+        "t2m_max": 100,
+        "prectotcorr": 100
+      }
+    }
+  ],
+  "viewports": [
+    {
+      "width_px": 360,
+      "base_map_tiles_loaded": 6,
+      "daily_rows": 366,
+      "monthly_groups_per_location": 12,
+      "comparisons": 3,
+      "csv_sha256": "355f4a1b2ed95edcf1d8f1ed08606ecdaf78be91a650096c44fe07aff5ae4f9c",
+      "horizontal_overflow": false,
+      "rotation": {
+        "crop_id": "quinoa",
+        "state": "insufficient_evidence",
+        "score": null,
+        "rank": null,
+        "rule_set_version": null,
+        "preliminary": {
+          "version": "illpa-inia-ilave-v2",
+          "cultivar": "unknown",
+          "criteria": 7,
+          "states": {
+            "sequence": "insufficient_information",
+            "ph": "insufficient_information",
+            "texture": "insufficient_information",
+            "drainage": "insufficient_information",
+            "moisture": "insufficient_information",
+            "precipitation": "insufficient_information",
+            "temperature": "insufficient_information"
+          }
+        },
+        "campaign": {
+          "period": {
+            "start": "2023-10-01",
+            "end": "2024-04-30"
+          },
+          "provider": "NASA POWER",
+          "cache_status": "cached",
+          "response_sha256": "532d516de062f32cbb9a29fe4b51a136d34bae01b05574d5f447744dd5e7cbea",
+          "mean_temperature": {
+            "value": 11,
+            "unit": "degC",
+            "valid_days": 213,
+            "expected_days": 213,
+            "coverage_pct": 100,
+            "status": "complete"
+          },
+          "accumulated_precipitation": {
+            "value": 559.1,
+            "unit": "mm",
+            "valid_days": 213,
+            "expected_days": 213,
+            "coverage_pct": 100,
+            "status": "complete"
+          },
+          "potential_frost_days": {
+            "value": 0,
+            "unit": "days",
+            "valid_days": 213,
+            "expected_days": 213,
+            "coverage_pct": 100,
+            "status": "complete"
+          }
+        }
+      }
+    },
+    {
+      "width_px": 768,
+      "base_map_tiles_loaded": 6,
+      "daily_rows": 366,
+      "monthly_groups_per_location": 12,
+      "comparisons": 3,
+      "csv_sha256": "355f4a1b2ed95edcf1d8f1ed08606ecdaf78be91a650096c44fe07aff5ae4f9c",
+      "horizontal_overflow": false,
+      "rotation": {
+        "crop_id": "quinoa",
+        "state": "insufficient_evidence",
+        "score": null,
+        "rank": null,
+        "rule_set_version": null,
+        "preliminary": {
+          "version": "illpa-inia-ilave-v2",
+          "cultivar": "unknown",
+          "criteria": 7,
+          "states": {
+            "sequence": "insufficient_information",
+            "ph": "insufficient_information",
+            "texture": "insufficient_information",
+            "drainage": "insufficient_information",
+            "moisture": "insufficient_information",
+            "precipitation": "insufficient_information",
+            "temperature": "insufficient_information"
+          }
+        },
+        "campaign": {
+          "period": {
+            "start": "2023-10-01",
+            "end": "2024-04-30"
+          },
+          "provider": "NASA POWER",
+          "cache_status": "cached",
+          "response_sha256": "532d516de062f32cbb9a29fe4b51a136d34bae01b05574d5f447744dd5e7cbea",
+          "mean_temperature": {
+            "value": 11,
+            "unit": "degC",
+            "valid_days": 213,
+            "expected_days": 213,
+            "coverage_pct": 100,
+            "status": "complete"
+          },
+          "accumulated_precipitation": {
+            "value": 559.1,
+            "unit": "mm",
+            "valid_days": 213,
+            "expected_days": 213,
+            "coverage_pct": 100,
+            "status": "complete"
+          },
+          "potential_frost_days": {
+            "value": 0,
+            "unit": "days",
+            "valid_days": 213,
+            "expected_days": 213,
+            "coverage_pct": 100,
+            "status": "complete"
+          }
+        }
+      }
+    },
+    {
+      "width_px": 1440,
+      "base_map_tiles_loaded": 8,
+      "daily_rows": 366,
+      "monthly_groups_per_location": 12,
+      "comparisons": 3,
+      "csv_sha256": "355f4a1b2ed95edcf1d8f1ed08606ecdaf78be91a650096c44fe07aff5ae4f9c",
+      "horizontal_overflow": false,
+      "rotation": {
+        "crop_id": "quinoa",
+        "state": "insufficient_evidence",
+        "score": null,
+        "rank": null,
+        "rule_set_version": null,
+        "preliminary": {
+          "version": "illpa-inia-ilave-v2",
+          "cultivar": "unknown",
+          "criteria": 7,
+          "states": {
+            "sequence": "insufficient_information",
+            "ph": "insufficient_information",
+            "texture": "insufficient_information",
+            "drainage": "insufficient_information",
+            "moisture": "insufficient_information",
+            "precipitation": "insufficient_information",
+            "temperature": "insufficient_information"
+          }
+        },
+        "campaign": {
+          "period": {
+            "start": "2023-10-01",
+            "end": "2024-04-30"
+          },
+          "provider": "NASA POWER",
+          "cache_status": "cached",
+          "response_sha256": "532d516de062f32cbb9a29fe4b51a136d34bae01b05574d5f447744dd5e7cbea",
+          "mean_temperature": {
+            "value": 11,
+            "unit": "degC",
+            "valid_days": 213,
+            "expected_days": 213,
+            "coverage_pct": 100,
+            "status": "complete"
+          },
+          "accumulated_precipitation": {
+            "value": 559.1,
+            "unit": "mm",
+            "valid_days": 213,
+            "expected_days": 213,
+            "coverage_pct": 100,
+            "status": "complete"
+          },
+          "potential_frost_days": {
+            "value": 0,
+            "unit": "days",
+            "valid_days": 213,
+            "expected_days": 213,
+            "coverage_pct": 100,
+            "status": "complete"
+          }
+        }
+      }
+    }
+  ],
+  "map_fallback": true
+}
