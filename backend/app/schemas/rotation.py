@@ -11,6 +11,9 @@ PreviousCrop = Literal["potato", "quinoa", "other", "unknown"]
 Irrigation = Literal["available", "limited", "none", "unknown"]
 Texture = Literal["sand", "loam", "clay", "other", "unknown"]
 Priority = Literal["water", "soil_conservation", "climate_adaptation"]
+WaterSource = Literal["canal", "pozo", "lluvia", "mixto", "unknown"]
+SoilFertility = Literal["high", "medium", "low", "unknown"]
+RotationObjective = Literal["yield", "water_saving", "soil_conservation", "risk_reduction", "unknown"]
 RuleStatus = Literal["draft", "reviewed", "approved"]
 CriterionState = Literal["pass", "fail", "unknown", "not_applicable"]
 EvaluationState = Literal["insufficient_evidence", "restriction_detected", "exploratory_comparison"]
@@ -30,6 +33,23 @@ LOCATION_ID = r"^[a-z0-9-]+$"
 FiniteNumber = Annotated[float, Field(strict=True, allow_inf_nan=False)]
 
 
+class RotationPlotContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    campaign: str | None = Field(default=None, max_length=80)
+    plot_area_m2: FiniteNumber | None = Field(default=None, ge=0, le=10_000_000)
+    elevation_m: FiniteNumber | None = Field(default=None, ge=0, le=7_000)
+    slope_percent: FiniteNumber | None = Field(default=None, ge=0, le=100)
+    water_source: WaterSource = "unknown"
+    soil_fertility: SoilFertility = "unknown"
+    last_yield_kg: FiniteNumber | None = Field(default=None, ge=0, le=100_000_000)
+    planned_sowing_date: date | None = None
+    planned_harvest_date: date | None = None
+    objective: RotationObjective = "unknown"
+    pest_history: str | None = Field(default=None, max_length=500, repr=False)
+    previous_history: str | None = Field(default=None, max_length=500, repr=False)
+
+
 class RotationInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -43,6 +63,7 @@ class RotationInput(BaseModel):
     soil_ph: FiniteNumber | None = Field(default=None, ge=0, le=14)
     soil_notes: str | None = Field(default=None, max_length=500, repr=False)
     priorities: list[Priority] = Field(default_factory=list, max_length=3)
+    plot_context: RotationPlotContext = Field(default_factory=RotationPlotContext)
 
     @field_validator("start", "end", mode="before")
     @classmethod

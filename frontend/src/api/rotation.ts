@@ -6,6 +6,24 @@ export type PreviousCrop = CropId | 'other' | 'unknown'
 export type Irrigation = 'available' | 'limited' | 'none' | 'unknown'
 export type SoilTexture = 'sand' | 'loam' | 'clay' | 'other' | 'unknown'
 export type Priority = 'water' | 'soil_conservation' | 'climate_adaptation'
+export type WaterSource = 'canal' | 'pozo' | 'lluvia' | 'mixto' | 'unknown'
+export type SoilFertility = 'high' | 'medium' | 'low' | 'unknown'
+export type RotationObjective = 'yield' | 'water_saving' | 'soil_conservation' | 'risk_reduction' | 'unknown'
+
+export interface RotationPlotContext {
+  campaign: string | null
+  plot_area_m2: number | null
+  elevation_m: number | null
+  slope_percent: number | null
+  water_source: WaterSource
+  soil_fertility: SoilFertility
+  last_yield_kg: number | null
+  planned_sowing_date: string | null
+  planned_harvest_date: string | null
+  objective: RotationObjective
+  pest_history: string | null
+  previous_history: string | null
+}
 
 export interface Crop {
   id: CropId
@@ -23,6 +41,7 @@ export interface RotationInput extends Period {
   soil_ph: number | null
   soil_notes: string | null
   priorities: Priority[]
+  plot_context: RotationPlotContext
 }
 
 export type Criterion = {

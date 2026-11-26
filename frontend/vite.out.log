@@ -1,0 +1,17 @@
+
+> agronexa-frontend@0.1.0 dev
+> vite --strictPort --host 127.0.0.1
+
+
+  VITE v7.3.8  ready in 2402 ms
+
+  ➜  Local:   http://127.0.0.1:5173/
+  ➜  press h + enter to show help
+10:59:59 [vite] (client) hmr update /src/styles/dashboard.css, /src/styles/index.css
+11:11:13 [vite] (client) hmr update /src/styles/index.css, /src/features/climate/LocationMap.tsx
+11:11:34 [vite] (client) hmr update /src/styles/dashboard.css, /src/styles/index.css
+13:49:43 [vite] (client) hmr update /src/styles/index.css, /src/pages/Rotations.tsx
+13:50:27 [vite] (client) hmr update /src/pages/Rotations.tsx, /src/styles/index.css
+13:50:27 [vite] (client) hmr update /src/pages/Rotations.tsx, /src/styles/index.css
+13:50:57 [vite] (client) hmr update /src/styles/dashboard.css, /src/styles/index.css
+13:51:14 [vite] (client) hmr update /src/pages/Rotations.tsx, /src/styles/index.css

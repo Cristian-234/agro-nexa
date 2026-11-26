@@ -1,6 +1,6 @@
 import { divIcon, type LatLngTuple } from 'leaflet'
 import { useEffect, useState } from 'react'
-import { MapContainer, Marker, Popup, TileLayer, Tooltip, useMap, ZoomControl } from 'react-leaflet'
+import { LayersControl, LayerGroup, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap, ZoomControl } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { Location } from '../../api/locations'
 import { number } from './format'
@@ -24,6 +24,15 @@ function MapResize() {
   return null
 }
 
+function FocusSelected({ selected }: { selected: Location | undefined }) {
+  const map = useMap()
+  useEffect(() => {
+    if (!selected) return
+    map.flyTo([selected.latitude, selected.longitude], Math.max(map.getZoom(), 9), { animate: true, duration: 0.7 })
+  }, [map, selected])
+  return null
+}
+
 export function LocationMap({ locations, selected, onSelect }: {
   locations: Location[]
   selected: Location | undefined
@@ -38,11 +47,32 @@ export function LocationMap({ locations, selected, onSelect }: {
         <p>Sur del Perú{selected && <> · <strong>{selected.name} seleccionada</strong></>}</p>
       </header>
       <div className="map-frame" role="region" aria-label="Mapa interactivo del sur del Perú">
-        <MapContainer bounds={bounds} boundsOptions={{ padding: [35, 35], maxZoom: 9 }} maxZoom={18}
-          scrollWheelZoom={false} zoomControl={false} attributionControl={false}>
+        <MapContainer bounds={bounds} boundsOptions={{ padding: [35, 35], maxZoom: 9 }} maxZoom={18} minZoom={4}
+          scrollWheelZoom zoomControl={false} attributionControl={false} className="map-canvas">
           <MapResize />
-          <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-            eventHandlers={{ tileerror: () => setTilesFailed(true) }} />
+          <FocusSelected selected={selected} />
+          <LayersControl position="topright">
+            <LayersControl.BaseLayer checked name="Mapa base">
+              <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="© OpenStreetMap contributors"
+                eventHandlers={{ tileerror: () => setTilesFailed(true) }} />
+            </LayersControl.BaseLayer>
+            <LayersControl.BaseLayer name="Satelital ESRI">
+              <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                attribution="Tiles © Esri" eventHandlers={{ tileerror: () => setTilesFailed(true) }} />
+            </LayersControl.BaseLayer>
+            <LayersControl.BaseLayer name="Híbrido ESRI">
+              <LayerGroup>
+                <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                  attribution="Tiles © Esri" eventHandlers={{ tileerror: () => setTilesFailed(true) }} />
+                <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+                  attribution="Labels © Esri" eventHandlers={{ tileerror: () => setTilesFailed(true) }} />
+              </LayerGroup>
+            </LayersControl.BaseLayer>
+            <LayersControl.BaseLayer name="Topográfico ESRI">
+              <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+                attribution="Tiles © Esri" eventHandlers={{ tileerror: () => setTilesFailed(true) }} />
+            </LayersControl.BaseLayer>
+          </LayersControl>
           <ZoomControl position="topright" zoomInTitle="Acercar mapa" zoomOutTitle="Alejar mapa" />
           {locations.map((location) => (
             <Marker key={location.id} position={[location.latitude, location.longitude]}
@@ -55,7 +85,7 @@ export function LocationMap({ locations, selected, onSelect }: {
             </Marker>
           ))}
         </MapContainer>
-        <div className="map-credit">© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a></div>
+        <div className="map-credit">Capas: OpenStreetMap y Esri · Usa el control para cambiar el estilo</div>
       </div>
       {tilesFailed && <p role="status" className="map-notice">El mapa base no pudo cargar por completo. Los marcadores y el selector siguen disponibles.</p>}
       <div className="map-locations" aria-label="Seleccionar localidad del mapa">

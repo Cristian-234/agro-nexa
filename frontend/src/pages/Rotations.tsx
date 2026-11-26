@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type { Location } from '../api/locations'
 import { Icon, LoadingSkeleton, PageHeading } from '../app/ui'
 import { evaluatePreliminary, type Moisture, type PreliminaryResult, type Texture } from '../api/preliminary'
-import { evaluateRotation, getCrops, type Crop, type CropId, type Irrigation, type PreviousCrop, type Priority, type RotationInput, type RotationResult, type SoilTexture } from '../api/rotation'
+import { evaluateRotation, getCrops, type Crop, type CropId, type Irrigation, type PreviousCrop, type Priority, type RotationInput, type RotationObjective, type RotationResult, type SoilFertility, type SoilTexture, type WaterSource } from '../api/rotation'
 import { examplePeriod, initialPeriod, periodError, PeriodFields, saveFilters } from '../features/climate/filters'
 import { formatPeriod } from '../features/climate/format'
 import { CampaignClimate } from '../features/rotation/CampaignClimate'
@@ -25,6 +25,12 @@ function RotationForm({ locations, crops }: { locations: Location[]; crops: Crop
         ?? locations.find(item => item.id === 'puno-ilave')?.id ?? locations[0].id,
       previous_crop: 'unknown', candidate_crops: [], irrigation: 'unknown',
       soil_ph: null, soil_notes: null, priorities: [],
+      plot_context: {
+        campaign: null, plot_area_m2: null, elevation_m: null, slope_percent: null,
+        water_source: 'unknown', soil_fertility: 'unknown', last_yield_kg: null,
+        planned_sowing_date: null, planned_harvest_date: null, objective: 'unknown',
+        pest_history: null, previous_history: null,
+      },
     }
   })
   const [ph, setPh] = useState('')
@@ -232,6 +238,51 @@ function RotationForm({ locations, crops }: { locations: Location[]; crops: Crop
               aria-describedby="soil-notes-help" onChange={event => edit({ soil_notes: event.target.value || null })} />
             <small id="soil-notes-help">Usa hasta 500 caracteres y evita nombres, direcciones u otros datos personales.</small>
           </div>
+          <details className="plot-context">
+            <summary>Agregar contexto de la parcela (opcional)</summary>
+            <p className="rotation-help">Estos datos ayudan a documentar la ficha. Se mostrarán en el contexto de la evaluación y no generan recomendaciones automáticas sin reglas aprobadas.</p>
+            <div className="rotation-fields plot-context-grid">
+              <div className="field"><label htmlFor="campaign">Campaña agrícola</label>
+                <input id="campaign" type="text" maxLength={80} placeholder="Ej. 2026–2027" value={form.plot_context.campaign ?? ''}
+                  onChange={event => edit({ plot_context: { ...form.plot_context, campaign: event.target.value || null } })} /></div>
+              <div className="field"><label htmlFor="plot-area">Área de parcela (m²)</label>
+                <input id="plot-area" type="number" min="0" step="any" placeholder="Ej. 1200" value={form.plot_context.plot_area_m2 ?? ''}
+                  onChange={event => edit({ plot_context: { ...form.plot_context, plot_area_m2: event.target.value === '' ? null : Number(event.target.value) } })} /></div>
+              <div className="field"><label htmlFor="elevation">Altitud (m s. n. m.)</label>
+                <input id="elevation" type="number" min="0" max="7000" step="any" placeholder="Ej. 3850" value={form.plot_context.elevation_m ?? ''}
+                  onChange={event => edit({ plot_context: { ...form.plot_context, elevation_m: event.target.value === '' ? null : Number(event.target.value) } })} /></div>
+              <div className="field"><label htmlFor="slope">Pendiente (%)</label>
+                <input id="slope" type="number" min="0" max="100" step="any" placeholder="Ej. 12" value={form.plot_context.slope_percent ?? ''}
+                  onChange={event => edit({ plot_context: { ...form.plot_context, slope_percent: event.target.value === '' ? null : Number(event.target.value) } })} /></div>
+              <div className="field"><label htmlFor="water-source">Fuente de agua</label>
+                <select id="water-source" value={form.plot_context.water_source} onChange={event => edit({ plot_context: { ...form.plot_context, water_source: event.target.value as WaterSource } })}>
+                  <option value="unknown">No sé</option><option value="canal">Canal</option><option value="pozo">Pozo</option><option value="lluvia">Lluvia</option><option value="mixto">Mixta</option>
+                </select></div>
+              <div className="field"><label htmlFor="soil-fertility">Fertilidad estimada</label>
+                <select id="soil-fertility" value={form.plot_context.soil_fertility} onChange={event => edit({ plot_context: { ...form.plot_context, soil_fertility: event.target.value as SoilFertility } })}>
+                  <option value="unknown">No sé</option><option value="high">Alta</option><option value="medium">Media</option><option value="low">Baja</option>
+                </select></div>
+              <div className="field"><label htmlFor="last-yield">Último rendimiento (kg)</label>
+                <input id="last-yield" type="number" min="0" step="any" placeholder="Ej. 850" value={form.plot_context.last_yield_kg ?? ''}
+                  onChange={event => edit({ plot_context: { ...form.plot_context, last_yield_kg: event.target.value === '' ? null : Number(event.target.value) } })} /></div>
+              <div className="field"><label htmlFor="rotation-objective">Objetivo principal</label>
+                <select id="rotation-objective" value={form.plot_context.objective} onChange={event => edit({ plot_context: { ...form.plot_context, objective: event.target.value as RotationObjective } })}>
+                  <option value="unknown">No definido</option><option value="yield">Mejorar rendimiento</option><option value="water_saving">Ahorrar agua</option><option value="soil_conservation">Conservar el suelo</option><option value="risk_reduction">Reducir riesgos</option>
+                </select></div>
+              <div className="field"><label htmlFor="sowing-date">Siembra prevista</label>
+                <input id="sowing-date" type="date" value={form.plot_context.planned_sowing_date ?? ''} onChange={event => edit({ plot_context: { ...form.plot_context, planned_sowing_date: event.target.value || null } })} /></div>
+              <div className="field"><label htmlFor="harvest-date">Cosecha prevista</label>
+                <input id="harvest-date" type="date" value={form.plot_context.planned_harvest_date ?? ''} onChange={event => edit({ plot_context: { ...form.plot_context, planned_harvest_date: event.target.value || null } })} /></div>
+            </div>
+            <div className="rotation-fields plot-context-notes">
+              <div className="field"><label htmlFor="previous-history">Historial de cultivos</label>
+                <textarea id="previous-history" rows={2} maxLength={500} placeholder="Cultivos de los últimos años…" value={form.plot_context.previous_history ?? ''}
+                  onChange={event => edit({ plot_context: { ...form.plot_context, previous_history: event.target.value || null } })} /></div>
+              <div className="field"><label htmlFor="pest-history">Plagas o enfermedades observadas</label>
+                <textarea id="pest-history" rows={2} maxLength={500} placeholder="Registra antecedentes si los conoces…" value={form.plot_context.pest_history ?? ''}
+                  onChange={event => edit({ plot_context: { ...form.plot_context, pest_history: event.target.value || null } })} /></div>
+            </div>
+          </details>
         </>}
         {step === 2 && <details className="wizard-review">
           <summary>Revisar datos antes de evaluar</summary>
@@ -241,6 +292,8 @@ function RotationForm({ locations, crops }: { locations: Location[]; crops: Crop
               ?? (form.previous_crop === 'other' ? 'Otro cultivo' : 'No sé')}</dd></div>
             <div><dt>Candidatos</dt><dd>{crops.filter(crop => form.candidate_crops.includes(crop.id)).map(crop => crop.name_es).join(', ')}</dd></div>
             <div><dt>Riego, textura y pH</dt><dd>{irrigationNames[form.irrigation]} · {textureNames[soilTexture]} · {ph || 'Sin pH'}</dd></div>
+            <div><dt>Parcela y campaña</dt><dd>{form.plot_context.plot_area_m2 ? `${form.plot_context.plot_area_m2} m²` : 'Sin área'} · {form.plot_context.campaign || 'Sin campaña'}</dd></div>
+            <div><dt>Objetivo</dt><dd>{form.plot_context.objective === 'yield' ? 'Mejorar rendimiento' : form.plot_context.objective === 'water_saving' ? 'Ahorrar agua' : form.plot_context.objective === 'soil_conservation' ? 'Conservar el suelo' : form.plot_context.objective === 'risk_reduction' ? 'Reducir riesgos' : 'No definido'}</dd></div>
           </dl>
           <div className="action-row"><button className="text-button" type="button" onClick={() => navigateStep(0)}>Editar zona y periodo</button>
             <button className="text-button" type="button" onClick={() => navigateStep(1)}>Editar cultivos</button></div>
