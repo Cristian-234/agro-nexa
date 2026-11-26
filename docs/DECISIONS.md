@@ -52,3 +52,7 @@
 Prompt de la portada en la herramienta integrada de generación de imágenes.
 
 > Editorial aerial landscape photograph for a Peruvian agricultural data platform. Panoramic wide 3:2 crop of the Andean highlands, Peru-inspired, quilt of small irregular emerald and sage agricultural parcels below layered distant mountains, rural dirt footpaths, subtle warm amber late-afternoon light, documentary realism and fine natural texture, no identifiable exact landmark. Image is the right-hand side of a split editorial hero so fill the whole image with scenery, foreground fields clearly defined, mountain ridge high enough to remain visible when cropped. Restrained colors, no people, text, graphics, overlays, logos, watermarks.
+
+## Simulación de rotaciones
+
+La demostración interactiva usa fixtures TEST generados con las funciones del motor. Las reglas solo se activan en memoria durante la generación. El navegador carga los resultados precalculados en una vista separada del formulario agrícola. El catálogo de la evaluación real exige aprobación y evidencia.

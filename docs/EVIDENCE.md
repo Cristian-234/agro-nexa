@@ -123,3 +123,9 @@ El control de contraste de los colores principales obtuvo 14,89:1 para el texto 
 - Inicio a 360 px. [Antes](evidence/frontend-redesign/antes/inicio-360.jpg) · [Después](evidence/frontend-redesign/despues/inicio-360.jpg).
 - [Explorar](evidence/frontend-redesign/despues/explorar-1440.jpg) · [Comparar](evidence/frontend-redesign/despues/comparar-1440.jpg) · [Rotaciones](evidence/frontend-redesign/despues/rotaciones-1440.jpg) · [Metodología](evidence/frontend-redesign/despues/metodologia-1440.jpg).
 - [Informe de Edge posterior](evidence/frontend-redesign/despues/browser-verification.json).
+
+## Simulación de rotaciones
+
+El 26 de noviembre de 2026 se comprobó que el motor reproduce los dos resultados TEST de la vista interactiva. En la comparación, quinua queda en primera posición con 100 puntos y papa en segunda con 66,7. En el segundo escenario, el incumplimiento del criterio crítico deja a quinua sin puntuación ni posición. Los valores y los predicados son ficticios. [Generador de los escenarios](../backend/tests/fixtures/rotation_demo.py) · [Prueba del motor](../backend/tests/test_rotation_demo.py).
+
+Edge mostró ambos escenarios a 360 y 1440 px con el catálogo de localidades simulado como inaccesible. La pantalla mantuvo visible la etiqueta TEST y el recorrido finalizó sin desbordamiento horizontal. [Pruebas de interfaz](../frontend/tests/Rotation.test.tsx).

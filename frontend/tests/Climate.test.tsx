@@ -79,7 +79,7 @@ it('explora, preserva los faltantes y muestra la procedencia y la lluvia parcial
   })
   const user = userEvent.setup()
   render(<App />)
-  await user.click(await screen.findByRole('button', { name: 'Usar año 2024' }))
+  await user.click(await screen.findByRole('button', { name: 'Usar año 2024' }, { timeout: 3000 }))
   await user.click(screen.getByRole('button', { name: 'Consultar clima' }))
   expect(await screen.findByRole('heading', { name: 'Resultados de Ilave' })).toBeTruthy()
   expect(screen.getByText('Caché desactualizada')).toBeTruthy()

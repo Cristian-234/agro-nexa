@@ -352,6 +352,9 @@ export function Rotations({ locations }: { locations: Location[] }) {
   return (
     <>
       <PageHeading title="Rotaciones agrícolas" description="Registra el contexto del lote y revisa la evidencia disponible para cada alternativa." icon="rotate" />
+      <p className="rotation-demo-entry">
+        <a href="/rotaciones?modo=demo" className="button secondary">Probar simulación con reglas de ejemplo</a>
+      </p>
       {result.status === 'error' && <div className="notice error"><p role="alert">{result.message}</p>
         <button className="button secondary" type="button" onClick={() => load(getCrops)}>Reintentar catálogo</button></div>}
       {(result.status === 'idle' || result.status === 'loading') && <LoadingSkeleton label="Cargando cultivos…" />}

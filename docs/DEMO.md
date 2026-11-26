@@ -34,6 +34,15 @@ En otra terminal, desde la raíz, ejecuta `cd frontend` y `npm run dev`. Abre [A
 
 En **Inicio**, **Explorar datos climáticos** abre el mapa. En móvil, el botón **Abrir menú** permite navegar entre módulos y Escape cierra el menú. En la ficha agrícola puedes revisar los datos antes de evaluar y volver a editarlos desde **Evaluación y resultados**.
 
+## Simulación del motor de rotaciones
+
+1. En **Rotaciones agrícolas**, abre **Probar simulación con reglas de ejemplo**.
+2. Selecciona **Comparar dos alternativas** y pulsa **Simular evaluación**. El motor ordena quinua después de papa y papa después de papa con fichas ficticias de pH 6,5 y textura franca.
+3. Abre el detalle de cada criterio para ver el dato, la condición sintética y su peso. El pH pesa dos y puede activar una restricción. La textura pesa uno.
+4. Selecciona **Ver una restricción crítica** y repite la simulación. Al usar el pH ficticio de 5,5, la alternativa de quinua incumple el rango TEST y se muestra sin puntuación ni posición.
+
+Las cifras de esta pantalla son ejemplos didácticos. El navegador carga dos resultados precalculados, generados por el motor con fixtures sintéticos. La simulación funciona sin una consulta a NASA ni una importación de reglas. Para regenerar sus resultados desde `backend`, ejecuta `python -m tests.fixtures.rotation_demo` en el entorno del proyecto.
+
 ## Reproducir las verificaciones
 
 Con la API y el frontend activos, desde `frontend` en PowerShell:

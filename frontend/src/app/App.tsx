@@ -9,6 +9,7 @@ import { LoadingSkeleton } from './ui'
 const Explore = lazy(() => import('../pages/Explore').then(module => ({ default: module.Explore })))
 const Compare = lazy(() => import('../pages/Compare').then(module => ({ default: module.Compare })))
 const Rotations = lazy(() => import('../pages/Rotations').then(module => ({ default: module.Rotations })))
+const RotationDemo = lazy(() => import('../features/rotation/demo/RotationDemo').then(module => ({ default: module.RotationDemo })))
 
 export function App() {
   const path = window.location.pathname.replace(/\/$/, '') || '/'
@@ -20,7 +21,9 @@ export function App() {
 
   let content
   if (path === '/metodologia') content = <Methodology />
-  else if (!known) content = <section className="page-heading"><div><h1>Página no encontrada</h1><a href="/">Ir al inicio</a></div></section>
+  else if (path === '/rotaciones' && new URLSearchParams(window.location.search).get('modo') === 'demo') {
+    content = <RotationDemo />
+  } else if (!known) content = <section className="page-heading"><div><h1>Página no encontrada</h1><a href="/">Ir al inicio</a></div></section>
   else if (result.status === 'error') content = <div className="notice error">
     <p role="alert">No se pudo cargar el catálogo de localidades.</p>
     <button className="button secondary" type="button" onClick={() => load(getLocations)}>Reintentar</button>

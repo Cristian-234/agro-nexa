@@ -148,3 +148,9 @@ Se renovaron el layout, Inicio, Explorar, Comparar, Rotaciones y Metodología. L
 La evaluación agronómica conserva los resultados de la API, incluida la abstención por falta de reglas aprobadas. La descarga CSV cubre el periodo completo. [Capturas y pruebas reproducibles](EVIDENCE.md#rediseño-del-frontend).
 
 La suite conservó las 12 pruebas aprobadas de la línea base. El lint y la compilación de producción de la versión final pasaron. `npm run test:demo` verificó en Edge los anchos de 360, 768, 1024, 1440 y 1920 px, el ajuste del mapa al colapsar la barra y el selector cuando se bloquea el mapa base.
+
+## Simulación de rotaciones
+
+La vista `/rotaciones?modo=demo` permite mostrar la comparación con posiciones y el incumplimiento de un criterio crítico. Los casos se generan con el mismo motor a partir de reglas TEST en memoria. La evaluación de campo sigue usando el catálogo de reglas aprobadas. [Recorrido](DEMO.md#simulación-del-motor-de-rotaciones) · [Verificaciones](EVIDENCE.md#simulación-de-rotaciones).
+
+Verificación del 26 de noviembre de 2026. Pasaron 88 pruebas offline de backend, 13 de frontend y la compilación de producción. Edge comprobó ambos escenarios a 360 y 1440 px.

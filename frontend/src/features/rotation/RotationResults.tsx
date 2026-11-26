@@ -13,7 +13,7 @@ const criterionStates = {
 }
 const operators = { eq: '=', gte: '≥', lte: '≤', between: 'entre' }
 
-function CriterionDetail({ item }: { item: Criterion }) {
+function CriterionDetail({ item, simulation }: { item: Criterion; simulation: boolean }) {
   const threshold = item.predicate.threshold
   const target = Array.isArray(threshold) ? threshold.map(displayEvidence).join(' y ') : displayEvidence(threshold)
   const unit = item.unit === 'degC' ? ' °C' : item.unit ? ' ' + item.unit : ''
@@ -30,28 +30,32 @@ function CriterionDetail({ item }: { item: Criterion }) {
           <div><dt>Periodo</dt><dd>{item.predicate.temporal_scope === 'reference_period' ? 'Periodo de referencia' : 'Ficha registrada'}</dd></div>
           <div><dt>Peso</dt><dd>{number(item.weight)}</dd></div>
         </dl>
-        <p>{item.geographic_context} · Revisión del {formatDay(item.reviewed_on)}</p>
+        <p>{item.geographic_context}{!simulation && <> · Revisión del {formatDay(item.reviewed_on)}</>}</p>
         <p>{item.limitation}</p>
-        <a href={item.source.url}>{item.source.title} · {item.source.section}</a>
+        {simulation ? <p>{item.source.title} · {item.source.section}</p>
+          : <a href={item.source.url}>{item.source.title} · {item.source.section}</a>}
       </div>
     </details>
   )
 }
 
-export function RotationResults({ data, crops }: { data: RotationResult; crops: Crop[] }) {
+export function RotationResults({ data, crops, simulation = false }: {
+  data: RotationResult; crops: Crop[]; simulation?: boolean
+}) {
   const ranks = data.alternatives.map(item => item.rank)
   return (
     <section className="result-stack" aria-labelledby="rotation-results">
       <header className="result-heading">
-        <div><h2 id="rotation-results">Evaluación con reglas aprobadas</h2>
-          <p>{formatPeriod(data.period)} · Evaluación del {formatInstant(data.evaluated_at)} (Perú)</p></div>
+        <div><h2 id="rotation-results">{simulation ? 'Resultados de la simulación TEST' : 'Evaluación con reglas aprobadas'}</h2>
+          <p>{simulation ? 'Ilave · Papa como cultivo anterior · Ficha ficticia'
+            : formatPeriod(data.period) + ' · Evaluación del ' + formatInstant(data.evaluated_at) + ' (Perú)'}</p></div>
       </header>
       <div className="panel source-panel">
-        {data.rule_set_version
+        {simulation ? <p><strong>Reglas sintéticas</strong> · {data.rule_set_version}</p> : data.rule_set_version
           ? <p>Versión del catálogo {data.rule_set_version}</p>
           : <p>El catálogo todavía carece de una versión aprobada. Por eso esta evaluación muestra «Evidencia insuficiente» aunque completes la ficha.</p>}
         {data.climate_source && <Provenance source={data.climate_source} period={data.period} />}
-        <Warnings warnings={data.warnings} />
+        {!simulation && <Warnings warnings={data.warnings} />}
       </div>
       <div className="rotation-results-grid">
         {data.alternatives.map(item => (
@@ -59,11 +63,11 @@ export function RotationResults({ data, crops }: { data: RotationResult; crops: 
             <h3>{crops.find(crop => crop.id === item.crop_id)?.name_es ?? item.crop_id}</h3>
             <span className={'badge ' + (item.state === 'exploratory_comparison' ? 'badge-good' : 'badge-warn')}>{states[item.state]}</span>
             {data.rule_set_version && <p>Cobertura de evidencia {number(item.evidence_coverage * 100)} %</p>}
-            {item.score !== null && <p><strong>{number(item.score)} de 100</strong> · Puntuación exploratoria
+            {item.score !== null && <p><strong>{number(item.score)} de 100</strong> · {simulation ? 'Puntos de la simulación' : 'Puntuación exploratoria'}
               {item.rank !== null && (' · Posición ' + item.rank +
                 (ranks.filter(rank => rank === item.rank).length > 1 ? ' (empate)' : ''))}</p>}
             <Warnings warnings={item.warnings} />
-            {item.criteria.map(criterion => <CriterionDetail key={criterion.rule_id} item={criterion} />)}
+            {item.criteria.map(criterion => <CriterionDetail key={criterion.rule_id} item={criterion} simulation={simulation} />)}
           </article>
         ))}
       </div>

@@ -2,6 +2,7 @@ import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, expect, it, vi } from 'vitest'
 import { Rotations } from '../src/pages/Rotations'
+import { App } from '../src/app/App'
 import { CampaignClimate } from '../src/features/rotation/CampaignClimate'
 import type { RotationInput, RotationResult } from '../src/api/rotation'
 import type { PreliminaryInput, PreliminaryResult } from '../src/api/preliminary'
@@ -173,6 +174,29 @@ it('reintenta el catálogo con un error controlado', async () => {
   expect((await screen.findByRole('alert')).textContent).toBe('Error TEST')
   await user.click(screen.getByRole('button', { name: 'Reintentar catálogo' }))
   expect(await screen.findByRole('heading', { name: 'Zona y periodo' })).toBeTruthy()
+})
+
+it('muestra puntuación y una restricción aunque el catálogo real esté inaccesible', async () => {
+  const fetch = vi.fn().mockRejectedValue(new Error('API fuera de servicio TEST'))
+  vi.stubGlobal('fetch', fetch)
+  window.history.replaceState(null, '', '/rotaciones?modo=demo')
+  const user = userEvent.setup()
+  render(<App />)
+  expect(await screen.findByText('Simulación TEST.')).toBeTruthy()
+  const submit = screen.getByRole('button', { name: 'Simular evaluación' })
+  await user.click(submit)
+  expect(screen.getByText('100 de 100')).toBeTruthy()
+  expect(screen.getByText(/Posición 1/)).toBeTruthy()
+  expect(screen.getByText(/Posición 2/)).toBeTruthy()
+  await user.click(screen.getByRole('radio', { name: /Ver una restricción crítica/ }))
+  await user.click(submit)
+  const quinoa = screen.getByRole('heading', { name: 'Quinua después de papa' }).closest('article')
+  expect(quinoa).toBeTruthy()
+  expect(within(quinoa!).getByText('Restricción detectada')).toBeTruthy()
+  expect(within(quinoa!).queryByText(/Puntos de la simulación/)).toBeNull()
+  expect(screen.queryByText('Evidencia insuficiente')).toBeNull()
+  expect(fetch).toHaveBeenCalledTimes(1)
+  expect(fetch.mock.calls[0][0]).toMatch(/\/locations$/)
 })
 
 it('consulta una ventana de campaña sin invocar los endpoints agronómicos', async () => {
