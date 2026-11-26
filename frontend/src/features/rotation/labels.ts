@@ -4,7 +4,7 @@ export const irrigationNames = {
   unknown: 'No sé', available: 'Disponible', limited: 'Limitado', none: 'Sin riego',
 } satisfies Record<Irrigation, string>
 export const textureNames = {
-  unknown: 'No sé', sand: 'Arenosa', loam: 'Franca', clay: 'Arcillosa', other: 'Otra',
+  unknown: 'No sé', sand: 'Arenosa', loam: 'Franca', sandy_loam: 'Franco-arenosa', clay: 'Arcillosa', other: 'Otra',
 } satisfies Record<SoilTexture, string>
 export const priorityNames = {
   water: 'Agua', soil_conservation: 'Conservación del suelo', climate_adaptation: 'Adaptación climática',

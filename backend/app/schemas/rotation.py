@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import re
+from calendar import monthrange
 from datetime import date, datetime
 from typing import Annotated, Literal
 
@@ -6,14 +9,16 @@ from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, field_validator, 
 
 from app.schemas.climate import ClimateSource, Period
 
-CropId = Literal["potato", "quinoa"]
-PreviousCrop = Literal["potato", "quinoa", "other", "unknown"]
+CropId = Annotated[str, Field(min_length=1, max_length=16, pattern=r"^[a-z][a-z0-9-]*$")]
+PreviousCrop = CropId
 Irrigation = Literal["available", "limited", "none", "unknown"]
-Texture = Literal["sand", "loam", "clay", "other", "unknown"]
+Texture = Literal["sand", "loam", "sandy_loam", "clay", "other", "unknown"]
 Priority = Literal["water", "soil_conservation", "climate_adaptation"]
 WaterSource = Literal["canal", "pozo", "lluvia", "mixto", "unknown"]
 SoilFertility = Literal["high", "medium", "low", "unknown"]
-RotationObjective = Literal["yield", "water_saving", "soil_conservation", "risk_reduction", "unknown"]
+RotationObjective = Literal[
+    "yield", "water_saving", "soil_conservation", "risk_reduction", "unknown"
+]
 RuleStatus = Literal["draft", "reviewed", "approved"]
 CriterionState = Literal["pass", "fail", "unknown", "not_applicable"]
 EvaluationState = Literal["insufficient_evidence", "restriction_detected", "exploratory_comparison"]
@@ -31,6 +36,47 @@ Variable = Literal[
 ]
 LOCATION_ID = r"^[a-z0-9-]+$"
 FiniteNumber = Annotated[float, Field(strict=True, allow_inf_nan=False)]
+KnownAnswer = Literal["yes", "no", "unknown"]
+
+
+class PlantingAnswers(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    experience: Literal["first", "one_two", "three_more", "unknown"] = "unknown"
+    campaigns: int | None = Field(default=None, strict=True, ge=0, le=200)
+    repeated: KnownAnswer = "unknown"
+    consecutive: int | None = Field(default=None, strict=True, ge=2, le=200)
+    other_crop: str | None = Field(default=None, min_length=1, max_length=80, repr=False)
+    last_harvest: date | None = None
+    last_harvest_approximate: bool = False
+    ponding: Literal["yes", "sometimes", "no", "unknown"] = "unknown"
+    water: Literal["rain", "irrigation", "both", "unknown"] = "unknown"
+    soil_test: KnownAnswer = "unknown"
+    ph_date: date | None = None
+    ph_method: str | None = Field(default=None, min_length=1, max_length=120)
+
+    @model_validator(mode="after")
+    def validate_history(self):
+        if self.consecutive is not None and (
+            self.repeated != "yes"
+            or (self.campaigns is not None and self.consecutive > self.campaigns)
+        ):
+            raise ValueError("Revisa el número de campañas seguidas del mismo cultivo.")
+        if self.campaigns == 0 and self.repeated == "yes":
+            raise ValueError("Para indicar repetición debes haber sembrado antes.")
+        if self.soil_test != "yes" and (self.ph_date or self.ph_method):
+            raise ValueError("Registra fecha y método solo si tienes un análisis de suelo.")
+        return self
+
+
+class CropProfile(BaseModel):
+    scientific_name: str
+    family: str
+    introduction: str
+    icon: str
+    varieties: list[str]
+    references: list[RuleSource]
+    evaluation_status: Literal["documentary_only"]
 
 
 class RotationPlotContext(BaseModel):
@@ -45,9 +91,24 @@ class RotationPlotContext(BaseModel):
     last_yield_kg: FiniteNumber | None = Field(default=None, ge=0, le=100_000_000)
     planned_sowing_date: date | None = None
     planned_harvest_date: date | None = None
+    sowing_approximate: bool = False
+    harvest_approximate: bool = False
     objective: RotationObjective = "unknown"
     pest_history: str | None = Field(default=None, max_length=500, repr=False)
     previous_history: str | None = Field(default=None, max_length=500, repr=False)
+
+    @model_validator(mode="after")
+    def validate_schedule(self):
+        sowing, harvest = self.planned_sowing_date, self.planned_harvest_date
+        if sowing and self.sowing_approximate:
+            sowing = sowing.replace(day=1)
+        if harvest and self.harvest_approximate:
+            harvest = harvest.replace(day=monthrange(harvest.year, harvest.month)[1])
+        if sowing and harvest and harvest < sowing:
+            raise ValueError(
+                "La cosecha prevista debe ser igual o posterior a la siembra prevista."
+            )
+        return self
 
 
 class RotationInput(BaseModel):
@@ -57,13 +118,14 @@ class RotationInput(BaseModel):
     start: date
     end: date
     previous_crop: PreviousCrop
-    candidate_crops: list[CropId] = Field(min_length=1, max_length=2)
+    candidate_crops: list[CropId] = Field(min_length=1, max_length=4)
     irrigation: Irrigation
     soil_texture: Texture = "unknown"
     soil_ph: FiniteNumber | None = Field(default=None, ge=0, le=14)
     soil_notes: str | None = Field(default=None, max_length=500, repr=False)
     priorities: list[Priority] = Field(default_factory=list, max_length=3)
     plot_context: RotationPlotContext = Field(default_factory=RotationPlotContext)
+    planting_answers: PlantingAnswers | None = None
 
     @field_validator("start", "end", mode="before")
     @classmethod
@@ -80,6 +142,34 @@ class RotationInput(BaseModel):
             raise ValueError("Selecciona cultivos candidatos distintos.")
         if len(set(self.priorities)) != len(self.priorities):
             raise ValueError("Selecciona prioridades distintas.")
+        if self.planting_answers:
+            answers = self.planting_answers
+            if answers.other_crop and self.previous_crop != "other":
+                raise ValueError("Selecciona otro cultivo para indicar su nombre.")
+            if self.soil_ph is not None and answers.soil_test != "yes":
+                raise ValueError("El pH necesita un análisis de suelo declarado.")
+            if answers.water == "rain" and self.plot_context.water_source in (
+                "canal",
+                "pozo",
+                "mixto",
+            ):
+                raise ValueError("Revisa la fuente de agua declarada para el terreno.")
+            if (answers.experience == "first" or answers.campaigns == 0) and (
+                self.previous_crop not in ("unknown", "fallow")
+                or answers.campaigns
+                or answers.last_harvest
+                or answers.repeated == "yes"
+            ):
+                raise ValueError("Revisa el historial si es la primera vez que siembras aquí.")
+            if answers.last_harvest and self.plot_context.planned_sowing_date:
+                last = answers.last_harvest
+                sowing = self.plot_context.planned_sowing_date
+                if self.plot_context.sowing_approximate:
+                    sowing = sowing.replace(day=monthrange(sowing.year, sowing.month)[1])
+                if (last.replace(day=1) if answers.last_harvest_approximate else last) > sowing:
+                    raise ValueError(
+                        "La siembra prevista debe ocurrir después de la última cosecha."
+                    )
         return self
 
 
@@ -90,6 +180,7 @@ class CropOut(BaseModel):
     name_es: str
     description: str
     source_url: AnyHttpUrl | None
+    profile: CropProfile | None = None
 
 
 class RuleSource(BaseModel):
@@ -110,7 +201,7 @@ UNITS = {
     "accumulated_precipitation": "mm",
 }
 CATEGORIES = {
-    "soil_texture": {"sand", "loam", "clay", "other"},
+    "soil_texture": {"sand", "loam", "sandy_loam", "clay", "other"},
     "irrigation": {"available", "limited", "none"},
 }
 
@@ -229,3 +320,20 @@ class RotationResult(BaseModel):
     climate_source: ClimateSource | None
     alternatives: list[Alternative]
     warnings: list[str]
+    regional_notes: list[RegionalNote] = Field(default_factory=list)
+    plot_notes: list[PlotNote] = Field(default_factory=list)
+
+
+class RegionalNote(BaseModel):
+    crop_id: CropId
+    state: Literal["attention", "missing_data", "reference"]
+    message: str
+    matrix_id: str | None = None
+    matrix_page: int | None = None
+    version: Literal["regional-v0.3"] = "regional-v0.3"
+    sources: list[RuleSource] = Field(default_factory=list)
+
+
+class PlotNote(BaseModel):
+    state: Literal["attention", "missing_data"]
+    message: str

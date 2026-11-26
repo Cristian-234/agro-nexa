@@ -86,6 +86,27 @@ def evaluate(client, **data):
     return response.json()
 
 
+@pytest.mark.parametrize(
+    ("context", "status"),
+    [
+        ({"planned_sowing_date": "2026-12-01", "planned_harvest_date": "2026-11-01"}, 422),
+        ({"planned_sowing_date": "2026-12-01", "planned_harvest_date": "2026-12-01"}, 200),
+        ({"planned_sowing_date": "2026-12-01", "planned_harvest_date": "2027-02-01"}, 200),
+        ({"planned_harvest_date": "2027-02-01"}, 200),
+    ],
+)
+def test_rotation_plot_context_validates_schedule_without_echoing_notes(client, context, status):
+    response = client.post(
+        URL, json=INPUT | {"plot_context": context | {"previous_history": "Historial TEST privado"}}
+    )
+    assert response.status_code == status
+    assert "Historial TEST privado" not in response.text
+    if status == 422:
+        assert "body.plot_context" in response.json()["details"]
+    else:
+        assert "plot_context" not in response.json()
+
+
 def test_unapproved_catalog_abstains_and_ficha_is_private(client, sessions, monkeypatch):
     def unexpected(*args, **kwargs):
         pytest.fail("No corresponde consultar NASA sin reglas activas.")
@@ -93,8 +114,8 @@ def test_unapproved_catalog_abstains_and_ficha_is_private(client, sessions, monk
     monkeypatch.setattr(routes, "get_series", unexpected)
     publish(sessions, rule(), status="reviewed")
     crops = client.get("/api/v1/crops").json()
-    assert [crop["name_es"] for crop in crops] == ["Papa", "Quinua"]
-    assert all(crop["source_url"].startswith("https://repositorio.inia.gob.pe/") for crop in crops)
+    assert [crop["name_es"] for crop in crops] == ["Cebada", "Haba", "Papa", "Quinua"]
+    assert all(crop["profile"]["references"] for crop in crops)
     response = client.post(URL, json=INPUT)
     assert response.headers["Cache-Control"] == "no-store"
     assert "Nota TEST privada" not in response.text
@@ -108,6 +129,88 @@ def test_unapproved_catalog_abstains_and_ficha_is_private(client, sessions, monk
         )
         assert result["evidence_coverage"] == 0 and result["criteria"] == []
         assert "aprobadas" in result["warnings"][0]
+
+
+def test_four_crop_documentary_evaluation_and_regional_scope(client):
+    request = {
+        **INPUT,
+        "candidate_crops": ["potato", "quinoa", "barley", "faba-bean"],
+        "planting_answers": {
+            "experience": "three_more",
+            "campaigns": 4,
+            "repeated": "yes",
+            "consecutive": 2,
+            "last_harvest": "2024-04-01",
+            "last_harvest_approximate": True,
+            "ponding": "sometimes",
+        },
+    }
+    response = client.post(URL, json=request)
+    assert response.status_code == 200
+    result = response.json()
+    assert result["rule_set_version"] is None
+    assert all(item["state"] == "insufficient_evidence" for item in result["alternatives"])
+    assert all(item["score"] is None for item in result["alternatives"])
+    assert "planting_answers" not in result
+    quinoa = [note for note in result["regional_notes"] if note["crop_id"] == "quinoa"]
+    assert [note["state"] for note in quinoa] == ["reference", "reference"]
+    assert all(note["matrix_id"] == "PUN-PAP-QUI" for note in quinoa)
+    assert "Yunguyo" in quinoa[0]["sources"][0]["section"]
+
+    for location, matrix_id, state in (
+        ("cusco-urubamba", "CUS-PAP-QUI", "missing_data"),
+        ("arequipa-chivay", "AQP-PAP-QUI", "reference"),
+    ):
+        response = client.post(URL, json={**request, "location_id": location})
+        result = response.json()
+        quinoa = next(note for note in result["regional_notes"] if note["crop_id"] == "quinoa")
+        assert (quinoa["matrix_id"], quinoa["state"]) == (matrix_id, state)
+        if location == "arequipa-chivay":
+            assert "Andaray" in quinoa["sources"][0]["section"]
+
+
+@pytest.mark.parametrize(
+    ("overrides", "answers", "status"),
+    [
+        ({"previous_crop": "unknown"}, {"campaigns": None, "repeated": "unknown"}, 200),
+        ({"previous_crop": "fallow"}, {"experience": "first"}, 200),
+        ({"previous_crop": "invented"}, {}, 422),
+        ({"candidate_crops": ["invented"]}, {}, 422),
+        ({}, {"experience": "first"}, 422),
+        ({}, {"campaigns": 0}, 422),
+        ({}, {"campaigns": -1}, 422),
+        ({}, {"campaigns": 2, "consecutive": 3, "repeated": "yes"}, 422),
+        ({}, {"other_crop": "Cultivo TEST"}, 422),
+        ({}, {"last_harvest": "2099-01-01"}, 422),
+        ({"soil_ph": 6}, {"soil_test": "no"}, 422),
+        ({"soil_ph": 6}, {"soil_test": "yes"}, 200),
+        (
+            {
+                "plot_context": {
+                    "planned_sowing_date": "2024-11-21",
+                    "planned_harvest_date": "2024-11-01",
+                    "harvest_approximate": True,
+                }
+            },
+            {},
+            200,
+        ),
+        (
+            {
+                "plot_context": {
+                    "planned_sowing_date": "2024-12-04",
+                    "planned_harvest_date": "2024-11-01",
+                    "harvest_approximate": True,
+                }
+            },
+            {},
+            422,
+        ),
+    ],
+)
+def test_planting_answers_validation(client, overrides, answers, status):
+    response = client.post(URL, json={**INPUT, **overrides, "planting_answers": answers})
+    assert response.status_code == status, response.text
 
 
 def test_critical_missing_fail_and_not_applicable(client, sessions):

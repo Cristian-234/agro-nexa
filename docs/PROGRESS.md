@@ -154,3 +154,20 @@ La suite conservó las 12 pruebas aprobadas de la línea base. El lint y la comp
 La vista `/rotaciones?modo=demo` permite mostrar la comparación con posiciones y el incumplimiento de un criterio crítico. Los casos se generan con el mismo motor a partir de reglas TEST en memoria. La evaluación de campo sigue usando el catálogo de reglas aprobadas. [Recorrido](DEMO.md#simulación-del-motor-de-rotaciones) · [Verificaciones](EVIDENCE.md#simulación-de-rotaciones).
 
 Verificación del 26 de noviembre de 2026. Pasaron 88 pruebas offline de backend, 13 de frontend y la compilación de producción. Edge comprobó ambos escenarios a 360 y 1440 px.
+
+## Correcciones del mapa y de la ficha de parcela
+
+El mapa encuadra Ilave, Chivay y Urubamba al abrirse. Se puede acercar a la localidad seleccionada y recuperar la vista general. Las cuatro capas se eligen con un selector nativo y muestran los créditos de los proveedores activos. La ficha valida el orden de las fechas en la interfaz y en la API, y muestra en resultados el contexto declarado en esa evaluación, incluida la abstención.
+
+El 26 de noviembre de 2026 pasaron 92 pruebas offline de backend, 14 de frontend, Ruff, ESLint y la compilación de producción. La demo de Edge pasó a 360 px con emulación táctil y a 768, 1024, 1440 y 1920 px con la caché real de NASA POWER. [Evidencia del ensayo](EVIDENCE.md#correcciones-del-mapa-y-de-la-ficha-de-parcela).
+
+## Asistente de planificación de siembra
+
+- La migración `0005` amplía `crops` con perfiles documentales y agrega cebada y haba. Conserva las fichas anteriores y las tablas de clima y reglas.
+- La ficha móvil pregunta por terreno, campañas, anterior, próxima siembra, agua y suelo. Conserva las respuestas al retroceder, admite fechas por mes y ofrece una revisión editable. Las mediciones y observaciones ampliadas son opcionales.
+- Los resultados presentan notas de la matriz regional v0.3, precisan los datos que faltan y consultan el resumen histórico de NASA POWER. Las reglas aprobadas y el contraste Illpa INIA siguen disponibles en sus propios ámbitos.
+- Inicio prioriza el acceso al asistente y a Explorar. En Comparar las tarjetas principales aparecen antes de los ajustes, con fuentes e indicadores ampliados desplegables.
+
+La revisión `0005` ya se aplicó a la base SQLite local. Pasaron 107 pruebas offline de backend, 14 de frontend y la demo de Edge en cinco anchos. Se verificó la descarga de la evaluación en JSON y la simulación TEST a 360 px. [Evidencia](EVIDENCE.md#asistente-de-planificación-de-siembra).
+
+[Guía de demostración](DEMO.md) · [Fuentes regionales](AGRONOMIC_SOURCES.md#matriz-regional-v03-para-el-asistente).

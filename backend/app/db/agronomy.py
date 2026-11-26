@@ -13,6 +13,7 @@ class Crop(Base):
     name_es: Mapped[str] = mapped_column(String(80))
     description: Mapped[str] = mapped_column(String(250))
     source_url: Mapped[str | None] = mapped_column(String(500))
+    profile: Mapped[dict | None] = mapped_column(JSON)
 
 
 class BibliographicReference(Base):

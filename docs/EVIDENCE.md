@@ -129,3 +129,20 @@ El control de contraste de los colores principales obtuvo 14,89:1 para el texto 
 El 26 de noviembre de 2026 se comprobó que el motor reproduce los dos resultados TEST de la vista interactiva. En la comparación, quinua queda en primera posición con 100 puntos y papa en segunda con 66,7. En el segundo escenario, el incumplimiento del criterio crítico deja a quinua sin puntuación ni posición. Los valores y los predicados son ficticios. [Generador de los escenarios](../backend/tests/fixtures/rotation_demo.py) · [Prueba del motor](../backend/tests/test_rotation_demo.py).
 
 Edge mostró ambos escenarios a 360 y 1440 px con el catálogo de localidades simulado como inaccesible. La pantalla mantuvo visible la etiqueta TEST y el recorrido finalizó sin desbordamiento horizontal. [Pruebas de interfaz](../frontend/tests/Rotation.test.tsx).
+
+## Correcciones del mapa y de la ficha de parcela
+
+El 26 de noviembre de 2026, `npm run test:demo` pasó en Edge 158.0.4370.33 sobre la compilación de producción. A 360 px con emulación táctil se comprobó que los tres marcadores quedaran dentro del mapa al abrirlo, que funcionaran el acercamiento y el regreso a la vista general, y que los créditos correspondieran a cada una de las cuatro capas al cambiar de selección. El recorrido a 360, 768, 1024, 1440 y 1920 px terminó sin desbordamiento horizontal y también comprobó el selector de localidad con las teselas bloqueadas. Se utilizaron series reales precargadas de NASA POWER para las tres localidades en 2024 y el resumen de campaña de Ilave. [Informe de Edge](evidence/mapa-parcela-2026-11-26/browser-verification.json) · [Captura móvil](evidence/mapa-parcela-2026-11-26/explorar-360.jpg).
+
+En la ficha móvil se introdujo una cosecha anterior a la siembra, se verificó que el formulario impidiera el envío y se corrigió la fecha. La vista de resultados mostró la campaña de prueba declarada y conservó `insufficient_evidence` en la evaluación de campo. La prueba offline de la API también confirmó el rechazo HTTP 422 para el intervalo invertido. [Verificación de navegador](../frontend/scripts/rotation-flow.mjs) · [Pruebas de la API](../backend/tests/test_rotation.py).
+
+## Asistente de planificación de siembra
+
+El 26 de noviembre de 2026 pasaron 107 pruebas de backend con `python -m pytest -m "not live"` y 14 de frontend con `npm run test -- --maxWorkers=1`. Pasaron también Ruff, ESLint, `npm run build` y `python -m alembic check`. Los casos de prueba del asistente usan datos TEST de historial, campañas y fechas.
+
+La revisión 0005 se aplicó a una copia de ensayo y a la base SQLite local configurada. Se obtuvo un respaldo de la base local y coincidieron las huellas de las ocho tablas previas ajenas a la revisión y del contenido anterior de las fichas de papa y quinua. El catálogo devolvió los cuatro cultivos y la base local siguió con cero reglas aprobadas.
+
+`npm run test:demo` pasó en Edge 158.0.4370.33 a 360, 768, 1024, 1440 y 1920 px. En móvil, con emulación táctil, se verificaron las opciones de cultivo, el foco al avanzar, la validación de fechas, la presentación de las referencias de Ilave, el contraste de Illpa INIA y la descarga JSON. El JSON incluyó la huella de la respuesta histórica de NASA POWER. El ensayo usó las series reales precargadas de 2024 y la ventana histórica de campaña de Ilave. La evaluación real conservó `insufficient_evidence`. Con la API bloqueada, la simulación TEST mostró la comparación y una restricción. [Informe de Edge](evidence/asistente-siembra-2026-11-26/browser-verification.json).
+
+- [Inicio móvil](evidence/asistente-siembra-2026-11-26/inicio-360.jpg) · [Comparar móvil](evidence/asistente-siembra-2026-11-26/comparar-360.jpg)
+- [Selección de cultivo móvil](evidence/asistente-siembra-2026-11-26/cultivos-360.jpg) · [Resultados del asistente](evidence/asistente-siembra-2026-11-26/rotaciones-360.jpg)

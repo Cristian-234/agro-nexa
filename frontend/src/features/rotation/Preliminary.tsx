@@ -9,7 +9,10 @@ const cultivarNames: Record<Cultivar, string> = {
 const drainageNames: Record<Drainage, string> = {
   unknown: 'No sé', good: 'Buen drenaje', limited: 'Drenaje limitado', poor: 'Drenaje deficiente', waterlogging: 'Encharcamiento',
 }
-const crops: Record<PreviousCrop, string> = { unknown: 'No sé', potato: 'Papa', quinoa: 'Quinua', other: 'Otro cultivo' }
+const crops: Record<PreviousCrop, string> = {
+  unknown: 'No sé', potato: 'Papa', quinoa: 'Quinua', barley: 'Cebada',
+  'faba-bean': 'Haba', other: 'Otro cultivo', fallow: 'Terreno en descanso',
+}
 const floodingNames: Record<FloodingHistory, string> = { unknown: 'No sé', yes: 'Sí', no: 'No' }
 const positions: Record<Position, string> = { unknown: 'No sé', slope: 'Ladera', plain: 'Pampa o terreno llano', other: 'Otra' }
 const emptyHarvest: LotHarvest = { crop: 'unknown', harvest_date: null }
@@ -187,8 +190,8 @@ export function PreliminaryFields({ data, onChange }: {
 
 const states = {
   matches_reference: { label: 'Coincide con la referencia', style: 'badge-good' },
-  outside_reference: { label: 'Fuera de la referencia', style: 'badge-warn' },
-  insufficient_information: { label: 'Información insuficiente', style: 'badge-neutral' },
+  outside_reference: { label: 'Necesita atención', style: 'badge-warn' },
+  insufficient_information: { label: 'Faltan datos', style: 'badge-neutral' },
 }
 const number = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 10 })
 
@@ -264,11 +267,14 @@ export function PreliminaryResults({ data }: { data: PreliminaryResult }) {
       {data.criteria.map(item => <article key={item.reference.id} className="panel query-card preliminary-criterion">
         <h3>{item.reference.parameter}</h3>
         {item.reference.criterion_type && <p className="criterion-type" data-type={item.reference.criterion_type}>{criterionTypes[item.reference.criterion_type]}</p>}
-        <span className={'badge ' + states[item.state].style}>{states[item.state].label}</span>
-        <dl>
+        <span className={'badge ' + states[item.state].style}>{
+          item.reference.criterion_type === 'documentary_reference' && item.state === 'insufficient_information'
+            ? 'Información de referencia' : states[item.state].label
+        }</span>
+        <p>{item.explanation}</p>
+        <details className="rotation-criterion"><summary>¿Por qué aparece este resultado?</summary><dl>
           <dt>Dato de la ficha</dt><dd>{enteredValue(item)}</dd>
           <dt>Referencia</dt><dd>{referenceValue(item.reference)}. {item.reference.scope}</dd>
-          <dt>Interpretación</dt><dd>{item.explanation}</dd>
           <dt>Limitación</dt><dd>{item.limitation}</dd>
           {item.pending_data.length > 0 && <>
             <dt>Datos pendientes</dt><dd><ul>{item.pending_data.map(pending => <li key={pending}>{pending}</li>)}</ul></dd>
@@ -280,7 +286,7 @@ export function PreliminaryResults({ data }: { data: PreliminaryResult }) {
             {item.reference.verification && <><br />Cotejada en la fuente primaria</>}
             <br />Versión {item.reference.version}
           </dd>
-        </dl>
+        </dl></details>
       </article>)}
     </div>
   </section>

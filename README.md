@@ -4,7 +4,7 @@ AgroNexa es una plataforma académica de Ciencia de Datos para consultar el clim
 
 La [guía de demostración](docs/DEMO.md) reúne la preparación de una base dedicada, el recorrido completo y las verificaciones de la evaluación preliminar de Ilave.
 
-La interfaz reúne en Inicio las localidades del catálogo y el último periodo consultado en la pestaña. En **Explorar clima** puedes paginar la tabla diaria y descargar el CSV completo. **Comparar localidades** conserva un color por localidad. **Rotaciones agrícolas** presenta una ficha de cuatro pasos con revisión editable y un bloque opcional del INIA para Ilave. El estado del encabezado proviene de la consulta al catálogo de AgroNexa.
+Inicio reúne las acciones de siembra y clima. **Explorar clima** conserva la tabla diaria y la descarga CSV. **Comparar localidades** muestra primero los resultados y deja las fuentes, tablas y ajustes en paneles desplegables. **Rotaciones** abre el asistente de planificación de siembra de cinco pasos.
 
 ## Arranque en Windows
 
@@ -42,9 +42,9 @@ Si faltan teselas, la selección por nombre y coordenadas sigue disponible. La [
 
 ### Ficha agrícola y rotaciones
 
-Aplica la migración con `python -m alembic upgrade head`. Abre [Rotaciones](http://localhost:5173/rotaciones) o usa **Abrir ficha agrícola** desde un resultado de exploración para conservar la localidad y el periodo. Elige el cultivo anterior y los candidatos, y registra el contexto de riego y suelo. El pH es opcional y corresponde a una medición.
+Aplica la migración con `python -m alembic upgrade head`. La revisión `0005` amplía el catálogo a papa, quinua, cebada y haba y añade las fichas documentales en la tabla existente. Abre [Rotaciones](http://localhost:5173/rotaciones) o usa **Abrir ficha agrícola** desde Explorar para conservar la localidad y el periodo. Completa **Mi terreno**, **Mis cultivos anteriores**, **Mi próxima siembra**, **Conozcamos un poco más tu terreno** y **Revisar mis respuestas**. Puedes indicar que desconoces un dato y editar las respuestas antes de analizar. **Todavía no lo decido** consulta las alternativas del catálogo con la misma ficha.
 
-El catálogo inicial permite evaluar la ficha y devuelve **evidencia insuficiente** por cada alternativa, con la explicación de qué reglas faltan. La sección de resultados identifica las fuentes y los criterios cuando existe una versión aprobada. Consulta las [fuentes agronómicas y el proceso de incorporación](docs/AGRONOMIC_SOURCES.md).
+Los resultados muestran qué encontró la matriz regional v0.3 para la combinación, aspectos por revisar y un resumen del clima histórico de NASA POWER. Los datos adicionales de terreno y mediciones son opcionales. Una fecha aproximada conserva su precisión mensual. **Ver detalle del motor de evaluación** muestra **Evidencia insuficiente** mientras falten reglas aprobadas o evidencia crítica y permite descargar la evaluación y su trazabilidad en JSON. Consulta las [fuentes agronómicas y el proceso de incorporación](docs/AGRONOMIC_SOURCES.md).
 
 Consulta Ilave para 2024 con la API local:
 
@@ -127,6 +127,8 @@ Con esa misma precarga y el catálogo agronómico inicial, ejecuta `npm run test
 
 Las tres localidades usan la misma ficha básica. Selecciona Ilave, papa como cultivo anterior y quinua como candidata para disponer del bloque opcional **Consultar referencias del INIA**. En ese bloque puedes declarar el cultivar y el historial del lote, fechar la medición de pH anotada en la ficha básica y registrar su método, el drenaje, la humedad y otros datos del lote. Puedes dejar en blanco lo que desconozcas.
 
-**Evaluar alternativas** ejecuta la evaluación general. La base inicial carece de reglas aprobadas y el motor muestra **Evidencia insuficiente**. Dentro del bloque opcional, **Contrastar con las referencias** muestra los resultados por criterio. También está disponible **Clima histórico de campaña en Ilave**, una consulta independiente de NASA POWER para el periodo elegido. [Fuentes y alcance](docs/AGRONOMIC_SOURCES.md#referencias-versionadas-de-fase-6).
+El contexto de parcela se muestra desde el estado local del formulario. Si registras ambas fechas previstas, la cosecha debe ser igual o posterior a la siembra. Al indicar un mes aproximado, el asistente comprueba el orden considerando sus posibles días.
+
+**Analizar mi próxima siembra** ejecuta la evaluación general. En los resultados, **Contrastar con las referencias** muestra el contraste de Illpa INIA por criterio. **Clima histórico de campaña en Ilave** permite consultar un segundo periodo histórico. [Fuentes y alcance](docs/AGRONOMIC_SOURCES.md#referencias-versionadas-de-fase-6).
 
 En **Rotaciones agrícolas**, abre **Probar simulación con reglas de ejemplo** para ver una comparación con puntuaciones y un segundo escenario con una restricción crítica. Los resultados TEST se generaron con el motor de rotaciones. La ficha, los umbrales y los pesos de la simulación son ficticios. [Recorrido de la simulación](docs/DEMO.md#simulación-del-motor-de-rotaciones).

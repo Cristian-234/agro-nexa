@@ -56,9 +56,44 @@ async function verifyDownload(page, width) {
   return digest
 }
 
+async function verifyMobileMap(page, map) {
+  async function verifyOverview() {
+    assert.equal(await map.evaluate(element => {
+      const frame = element.getBoundingClientRect()
+      const pins = [...element.querySelectorAll('.leaflet-marker-icon')]
+      return pins.length === 3 && pins.every(pin => {
+        const box = pin.getBoundingClientRect()
+        return box.left >= frame.left && box.right <= frame.right
+          && box.top >= frame.top && box.bottom <= frame.bottom
+      })
+    }), true)
+  }
+  await map.getByTitle('Ilave, Puno').waitFor()
+  await verifyOverview()
+  await page.getByRole('button', { name: 'Acercar a Ilave', exact: true }).click()
+  await page.getByRole('button', { name: 'Ver todas las localidades', exact: true }).click()
+  await verifyOverview()
+
+  for (const [layer, expectedCredits] of [
+    ['Satelital ESRI', ['Esri World Imagery']],
+    ['Híbrido ESRI', ['Esri World Imagery', 'Esri World Boundaries and Places']],
+    ['Topográfico ESRI', ['Esri World Topo Map']],
+    ['Mapa base', ['OpenStreetMap contributors']],
+  ]) {
+    await page.getByLabel('Capa del mapa').selectOption({ label: layer })
+    for (const credit of expectedCredits) {
+      await map.getByRole('link', { name: credit, exact: true }).waitFor()
+    }
+    if (layer === 'Mapa base') {
+      assert.equal(await map.getByRole('link', { name: /Esri World/ }).count(), 0)
+    }
+    await checkOverflow(page)
+  }
+}
+
 async function run(page, width) {
   await page.goto(base, { waitUntil: 'domcontentloaded' })
-  await page.getByRole('heading', { name: 'Inteligencia climática para la agricultura andina' }).waitFor()
+  await page.getByRole('heading', { name: 'Conoce tu clima. Planifica tu siembra.' }).waitFor()
   await page.getByText('API disponible', { exact: true }).waitFor()
   await page.waitForFunction(() => document.querySelector('.hero-image img')?.naturalWidth > 0)
   await checkOverflow(page)
@@ -88,6 +123,7 @@ async function run(page, width) {
   await explore.waitFor()
   assert.equal(await page.getByLabel('Localidad', { exact: true }).inputValue(), 'puno-ilave')
   const map = page.getByRole('region', { name: 'Mapa interactivo del sur del Perú' })
+  if (width === 360) await verifyMobileMap(page, map)
   if (width === 1440) {
     const expanded = await map.boundingBox()
     await page.getByRole('button', { name: 'Colapsar barra lateral' }).click()
@@ -169,9 +205,9 @@ async function run(page, width) {
   await page.keyboard.press('Enter')
   await page.getByRole('region', { name: 'Ilave − Urubamba', exact: true }).getByText('366 · 100 %').first().waitFor()
   await checkOverflow(page)
-  if (evidence && width === 1440) {
+  if (evidence && (width === 360 || width === 1440)) {
     await page.evaluate(() => window.scrollTo(0, 0))
-    await page.screenshot({ path: path.join(evidence, 'comparar-1440.jpg'), fullPage: true, quality: 86 })
+    await page.screenshot({ path: path.join(evidence, 'comparar-' + width + '.jpg'), fullPage: true, quality: 86 })
   }
   let rotation
   if (demo) {
@@ -183,11 +219,18 @@ async function run(page, width) {
     assert.equal(refreshed.source.cache_status, 'cached')
     csvHash = await verifyDownload(page, width)
     await page.getByRole('link', { name: 'Abrir ficha agrícola' }).click()
-    rotation = await verifyAbstention(page, manifest.period, campaignManifest)
+    rotation = await verifyAbstention(page, manifest.period, campaignManifest, {
+      checkPlotContext: width === 360,
+      captureCropStep: evidence && width === 360 ? path.join(evidence, 'cultivos-360.jpg') : undefined,
+    })
     await checkOverflow(page)
-    if (evidence && width === 1440) {
+    const motor = page.getByText('Ver detalle del motor de evaluación', { exact: true })
+    if (evidence && (width === 360 || width === 1440)) {
+      await page.getByText('Consultar referencias del INIA', { exact: true }).click()
+      await motor.click()
       await page.evaluate(() => window.scrollTo(0, 0))
-      await page.screenshot({ path: path.join(evidence, 'rotaciones-1440.jpg'), fullPage: true, quality: 86 })
+      await page.screenshot({ path: path.join(evidence, 'rotaciones-' + width + '.jpg'), fullPage: true, quality: 86 })
+      await motor.click()
     }
     await page.getByRole('link', { name: /cómo se evalúan/ }).click()
     await page.getByRole('heading', { name: 'Evaluación de rotaciones' }).waitFor()
@@ -201,7 +244,9 @@ async function run(page, width) {
 try {
   if (evidence) await mkdir(evidence, { recursive: true })
   for (const width of widths) {
-    const page = await browser.newPage({ viewport: { width, height: 950 } })
+    const page = await browser.newPage({
+      viewport: { width, height: 950 }, isMobile: width === 360, hasTouch: width === 360,
+    })
     page.setDefaultTimeout(15000)
     page.setDefaultNavigationTimeout(40000)
     const errors = []
@@ -224,6 +269,22 @@ try {
   await offlineMap.getByRole('heading', { name: 'Chivay', exact: true }).waitFor()
   report.map_fallback = true
   await offlineMap.close()
+  if (demo) {
+    const simulation = await browser.newPage({ viewport: { width: 360, height: 850 }, isMobile: true, hasTouch: true })
+    await simulation.route('**/api/v1/**', route => route.abort())
+    await simulation.goto(base + '/rotaciones?modo=demo', { waitUntil: 'domcontentloaded' })
+    await simulation.getByText('Simulación TEST.', { exact: true }).waitFor()
+    const runSimulation = simulation.getByRole('button', { name: 'Simular evaluación' })
+    await runSimulation.click()
+    await simulation.getByText('100 de 100', { exact: true }).waitFor()
+    await simulation.getByText(/Posición 2/).waitFor()
+    await simulation.getByRole('radio', { name: /Ver una restricción crítica/ }).check()
+    await runSimulation.click()
+    await simulation.getByText('Restricción detectada', { exact: true }).waitFor()
+    await checkOverflow(simulation)
+    report.rotation_simulation = { width_px: 360, comparison: true, restriction: true, api_blocked: true }
+    await simulation.close()
+  }
   const json = JSON.stringify(report, null, 2)
   if (evidence) await writeFile(path.join(evidence, 'browser-verification.json'), json + '\n')
   console.log(json)

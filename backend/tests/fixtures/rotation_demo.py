@@ -91,7 +91,7 @@ def build_fixtures():
                 "scenario": scenario,
                 "soil_ph": ph,
                 "soil_texture": data.soil_texture,
-                "result": result.model_dump(mode="json"),
+                "result": result.model_dump(mode="json", exclude={"regional_notes", "plot_notes"}),
             }
         )
     return fixtures

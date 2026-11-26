@@ -1,6 +1,6 @@
-import { divIcon, type LatLngTuple } from 'leaflet'
-import { useEffect, useState } from 'react'
-import { LayersControl, LayerGroup, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap, ZoomControl } from 'react-leaflet'
+import { divIcon, type FitBoundsOptions, type LatLngTuple, type Map as LeafletMap } from 'leaflet'
+import { useEffect, useRef, useState } from 'react'
+import { AttributionControl, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap, ZoomControl } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { Location } from '../../api/locations'
 import { number } from './format'
@@ -12,6 +12,25 @@ const marker = (selected: boolean) => divIcon({
 })
 const pin = marker(false)
 const selectedPin = marker(true)
+const overview: FitBoundsOptions = { padding: [35, 35], maxZoom: 9 }
+const arcgis = 'https://server.arcgisonline.com/ArcGIS/rest/services'
+const imagery = arcgis + '/World_Imagery/MapServer'
+const boundaries = arcgis + '/Reference/World_Boundaries_and_Places/MapServer'
+const topographic = arcgis + '/World_Topo_Map/MapServer'
+const tile = '/tile/{z}/{y}/{x}'
+const osmCredit = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+const imageryCredit = `<a href="${imagery}">Esri World Imagery</a>, Vantor, Earthstar Geographics y GIS User Community`
+const boundariesCredit = `<a href="${boundaries}">Esri World Boundaries and Places</a>, HERE, Garmin, ${osmCredit} y GIS User Community`
+const topographicCredit = `<a href="${topographic}">Esri World Topo Map</a>, HERE, Garmin, Intermap, increment P Corp., GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), ${osmCredit} y GIS User Community`
+const layers = {
+  osm: { name: 'Mapa base', tiles: [{ url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', credit: osmCredit }] },
+  imagery: { name: 'Satelital ESRI', tiles: [{ url: imagery + tile, credit: imageryCredit }] },
+  hybrid: { name: 'Híbrido ESRI', tiles: [
+    { url: imagery + tile, credit: imageryCredit },
+    { url: boundaries + tile, credit: boundariesCredit },
+  ] },
+  topographic: { name: 'Topográfico ESRI', tiles: [{ url: topographic + tile, credit: topographicCredit }] },
+}
 
 function MapResize() {
   const map = useMap()
@@ -24,55 +43,39 @@ function MapResize() {
   return null
 }
 
-function FocusSelected({ selected }: { selected: Location | undefined }) {
-  const map = useMap()
-  useEffect(() => {
-    if (!selected) return
-    map.flyTo([selected.latitude, selected.longitude], Math.max(map.getZoom(), 9), { animate: true, duration: 0.7 })
-  }, [map, selected])
-  return null
-}
-
 export function LocationMap({ locations, selected, onSelect }: {
   locations: Location[]
   selected: Location | undefined
   onSelect: (id: string) => void
 }) {
   const [tilesFailed, setTilesFailed] = useState(false)
+  const [layer, setLayer] = useState<keyof typeof layers>('osm')
+  const map = useRef<LeafletMap>(null)
   const bounds = locations.map(({ latitude, longitude }): LatLngTuple => [latitude, longitude])
   return (
     <section className="panel map-panel" aria-labelledby="map-heading">
-      <header className="card-heading">
-        <h2 id="map-heading">Mapa de localidades</h2>
-        <p>Sur del Perú{selected && <> · <strong>{selected.name} seleccionada</strong></>}</p>
+      <header className="card-heading map-heading">
+        <div>
+          <h2 id="map-heading">Mapa de localidades</h2>
+          <p>Sur del Perú{selected && <> · <strong>{selected.name} seleccionada</strong></>}</p>
+        </div>
+        <div className="field map-layer-field">
+          <label htmlFor="map-layer">Capa del mapa</label>
+          <select id="map-layer" value={layer} onChange={event => {
+            setLayer(event.target.value as keyof typeof layers)
+            setTilesFailed(false)
+          }}>
+            {Object.entries(layers).map(([id, item]) => <option key={id} value={id}>{item.name}</option>)}
+          </select>
+        </div>
       </header>
       <div className="map-frame" role="region" aria-label="Mapa interactivo del sur del Perú">
-        <MapContainer bounds={bounds} boundsOptions={{ padding: [35, 35], maxZoom: 9 }} maxZoom={18} minZoom={4}
+        <MapContainer ref={map} bounds={bounds} boundsOptions={overview} maxZoom={18} minZoom={4}
           scrollWheelZoom zoomControl={false} attributionControl={false} className="map-canvas">
           <MapResize />
-          <FocusSelected selected={selected} />
-          <LayersControl position="topright">
-            <LayersControl.BaseLayer checked name="Mapa base">
-              <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="© OpenStreetMap contributors"
-                eventHandlers={{ tileerror: () => setTilesFailed(true) }} />
-            </LayersControl.BaseLayer>
-            <LayersControl.BaseLayer name="Satelital ESRI">
-              <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                attribution="Tiles © Esri" eventHandlers={{ tileerror: () => setTilesFailed(true) }} />
-            </LayersControl.BaseLayer>
-            <LayersControl.BaseLayer name="Híbrido ESRI">
-              <LayerGroup>
-                <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                  attribution="Tiles © Esri" eventHandlers={{ tileerror: () => setTilesFailed(true) }} />
-                <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
-                  attribution="Labels © Esri" eventHandlers={{ tileerror: () => setTilesFailed(true) }} />
-              </LayerGroup>
-            </LayersControl.BaseLayer>
-            <LayersControl.BaseLayer name="Topográfico ESRI">
-              <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
-                attribution="Tiles © Esri" eventHandlers={{ tileerror: () => setTilesFailed(true) }} />
-            </LayersControl.BaseLayer>
-          </LayersControl>
+          <AttributionControl prefix={false} />
+          {layers[layer].tiles.map(({ url, credit }) => <TileLayer key={url} url={url} attribution={credit}
+            eventHandlers={{ tileerror: () => setTilesFailed(true) }} />)}
           <ZoomControl position="topright" zoomInTitle="Acercar mapa" zoomOutTitle="Alejar mapa" />
           {locations.map((location) => (
             <Marker key={location.id} position={[location.latitude, location.longitude]}
@@ -85,7 +88,6 @@ export function LocationMap({ locations, selected, onSelect }: {
             </Marker>
           ))}
         </MapContainer>
-        <div className="map-credit">Capas: OpenStreetMap y Esri · Usa el control para cambiar el estilo</div>
       </div>
       {tilesFailed && <p role="status" className="map-notice">El mapa base no pudo cargar por completo. Los marcadores y el selector siguen disponibles.</p>}
       <div className="map-locations" aria-label="Seleccionar localidad del mapa">
@@ -97,6 +99,15 @@ export function LocationMap({ locations, selected, onSelect }: {
             {!location.verified && <span>Coordenada preliminar</span>}
           </button>
         ))}
+      </div>
+      <div className="action-row map-view-actions">
+        {selected && <button type="button" className="text-button" onClick={() => {
+          const instance = map.current
+          instance?.setView([selected.latitude, selected.longitude], Math.max(instance.getZoom(), 9), { animate: false })
+        }}>Acercar a {selected.name}</button>}
+        <button type="button" className="text-button" onClick={() => map.current?.fitBounds(bounds, { ...overview, animate: false })}>
+          Ver todas las localidades
+        </button>
       </div>
     </section>
   )

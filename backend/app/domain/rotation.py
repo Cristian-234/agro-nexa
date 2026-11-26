@@ -23,6 +23,11 @@ class Evidence:
 
 
 def profile_evidence(data: RotationInput) -> dict[str, Evidence]:
+    ph = data.soil_ph
+    if data.planting_answers and not (
+        data.planting_answers.ph_date and data.planting_answers.ph_method
+    ):
+        ph = None
     return {
         field: Evidence(
             None if value == "unknown" else value,
@@ -33,7 +38,9 @@ def profile_evidence(data: RotationInput) -> dict[str, Evidence]:
             else "Dato registrado en la ficha.",
         )
         for field, value in (
-            (key, getattr(data, key)) for key in ("soil_ph", "soil_texture", "irrigation")
+            ("soil_ph", ph),
+            ("soil_texture", data.soil_texture),
+            ("irrigation", data.irrigation),
         )
     }
 

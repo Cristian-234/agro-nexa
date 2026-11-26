@@ -1,6 +1,6 @@
 # Fuentes agronómicas y aprobación
 
-El catálogo instalado incluye las fichas de papa y quinua y parte con **cero reglas aprobadas**. Las fuentes siguientes orientan la revisión bibliográfica. Para activar un criterio, el equipo o asesor debe documentar su aplicabilidad, condición y revisión en una nueva versión del catálogo.
+El catálogo instalado incluye fichas de papa, quinua, cebada y haba y parte con **cero reglas aprobadas**. Las fuentes siguientes orientan la revisión bibliográfica. Para activar un criterio, el equipo o asesor debe documentar su aplicabilidad, condición y revisión en una nueva versión del catálogo.
 
 | Fuente institucional | Contexto que aporta | Estado en AgroNexa |
 | --- | --- | --- |
@@ -70,3 +70,18 @@ El [diagnóstico agronómico](diagnostico_agronomico_ilave.md) orienta el alcanc
 El catálogo INIA/FAO queda como corroboración bibliográfica. El plegable cotejado basta para los valores implementados. Las ventanas de 140 días y los ejemplos de octubre a abril del diagnóstico carecen de confirmación para una parcela concreta. La consulta climática usa fechas elegidas por el usuario y la resolución meteorológica documentada del producto NASA POWER es aproximadamente 0,5° × 0,625°, en LST. El conteo de mínimas ≤ 0 °C describe días de frío potencial a escala de celda. Los datos de campo, la altitud, la posición y el historial de agroquímicos se registran como contexto. Las afirmaciones del diagnóstico sobre profundidad de muestreo, residuos, heladas por etapa y severidad requieren revisión local.
 
 El archivo del asesor conserva su estado de borrador. El cotejo de una fuente primaria acredita la transcripción y su contexto. La aprobación profesional requiere una revisión separada y un contrato que respete el alcance del criterio. El motor de rotaciones sigue absteniéndose con el catálogo inicial.
+
+## Matriz regional v0.3 para el asistente
+
+El documento aportado por el usuario, *AGRONEXA | Ampliación regional v0.3*, se consultó como **catálogo candidato en borrador**. SHA-256 `37d720092ca2e8c1e49f35671b625a8ae5a9c37066046ae5d09376f8b57aa038`. Las pp. 1–2 contienen las 48 combinaciones regionales. Se conservan la combinación, la página, la versión y la referencia en cada observación de la interfaz.
+
+| Código del documento | Presentación en el asistente |
+| --- | --- |
+| D | Antecedente documental en el ámbito de la fuente. |
+| O | Observación de campo que requiere confirmar zona y variedad. |
+| R | Atención por repetir el cultivo. |
+| I | Faltan datos para respaldar localmente la combinación. |
+
+Las fuentes de Yunguyo y las observaciones de Puno requieren revisión antes de aplicarse a Ilave. La ficha Luzmalta conserva su ámbito varietal. La referencia de quinua de Andaray, Condesuyos, se identifica como tal al consultar Chivay. Las celdas con dos clases muestran ambas por separado. El bloque de Illpa INIA conserva su propio ámbito y evaluación.
+
+En Cusco, el enlace original de Haba INIA 401 del PDF devolvió HTTP 404. Se enlaza la ficha institucional del repositorio del INIA. La ampliación conserva las variedades publicadas como información documental y deja pendientes los umbrales, la transferencia entre localidades y la revisión agronómica. [Ficha Luzmalta](https://repositorio.inia.gob.pe/items/54783374-187d-4cbd-9d2e-f6a10d1ca4f0) · [Haba INIA 401-Cusco](https://repositorio.inia.gob.pe/items/e4eef787-0290-4124-bb51-9230c3c72ea1) · [Manual DRA Puno](https://agropuno.gob.pe/Archivos/Biblioteca/manual_mip_haba.pdf#page=18).

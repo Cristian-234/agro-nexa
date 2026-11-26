@@ -78,8 +78,6 @@ h3 { font-size: 18px; font-weight: 700; letter-spacing: -.018em; }
 .card-heading p { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.45; }
 .map-frame { height: clamp(255px, 27vw, 350px); position: relative; isolation: isolate; background: #e7eee5; }
 .map-frame .leaflet-container { height: 100%; background: #e4eee3; }
-.map-credit { position: absolute; z-index: 490; bottom: 0; right: 0; padding: 1px 5px; background: #fff; color: #28392d; font-size: 11px; max-width: 100%; }
-.map-credit a { color: #205540; }
 .map-pin { background: #326c56; border: 3px solid white; border-radius: 50%; box-shadow: 0 1px 4px #213d32aa; }
 .map-pin-selected { background: #194534; box-shadow: 0 0 0 4px #1c955e77, 0 2px 5px #213d32a0; }
 .map-locations { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 15px; }

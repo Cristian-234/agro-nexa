@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, Response
 from sqlalchemy import select
 
 from app.core.errors import ApiError
-from app.db.agronomy import BibliographicReference
+from app.db.agronomy import BibliographicReference, Crop
 from app.db.models import Location
 from app.domain.preliminary import CATALOG_VERSION, CRITERIA, evaluate_criterion
 from app.schemas.preliminary import PreliminaryInput, PreliminaryResult, Reference
@@ -13,10 +13,16 @@ from app.services.climate import PERU
 router = APIRouter(prefix="/api/v1/rotations", tags=["Evaluación preliminar"])
 
 
-def load_references(request: Request, location_id: str | None = None) -> list[Reference]:
+def load_references(
+    request: Request, location_id: str | None = None, lot_crops: set[str] | None = None
+) -> list[Reference]:
     with request.app.state.sessions() as session:
         if location_id and session.get(Location, location_id) is None:
             raise ApiError(404, "unknown_location", "La localidad solicitada no existe.")
+        if lot_crops:
+            crop_ids = set(session.scalars(select(Crop.id)))
+            if not lot_crops <= (crop_ids | {"unknown", "other", "fallow"}):
+                raise ApiError(422, "unknown_crop", "Revisa los cultivos del historial.")
         statement = select(BibliographicReference).where(
             BibliographicReference.version == CATALOG_VERSION
         )
@@ -48,7 +54,9 @@ def preliminary(request: Request, response: Response, data: PreliminaryInput):
             "future_measurement",
             "Las fechas de observación, medición y cosecha no pueden ser futuras.",
         )
-    references = load_references(request, data.location_id)
+    references = load_references(
+        request, data.location_id, {item.crop for item in data.lot_history}
+    )
     response.headers["Cache-Control"] = "no-store"
     return PreliminaryResult(
         location_id=data.location_id,

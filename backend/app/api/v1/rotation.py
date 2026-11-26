@@ -9,6 +9,7 @@ from sqlalchemy import select
 from app.core.errors import ApiError
 from app.db.agronomy import Crop
 from app.db.models import Location
+from app.domain.regional_references import plot_notes, regional_notes
 from app.domain.rotation import (
     alternative,
     climate_evidence,
@@ -45,6 +46,18 @@ def evaluate(request: Request, response: Response, data: RotationInput):
         if location is None:
             raise ApiError(404, "unknown_location", "La localidad solicitada no existe.")
         region, verified = location.region, location.verified
+        crop_ids = set(session.scalars(select(Crop.id)))
+        if not set(data.candidate_crops) <= crop_ids or data.previous_crop not in (
+            crop_ids | {"other", "unknown", "fallow"}
+        ):
+            raise ApiError(422, "unknown_crop", "Selecciona cultivos del catálogo disponible.")
+        answers = data.planting_answers
+        if answers and any(day and day > today for day in (answers.last_harvest, answers.ph_date)):
+            raise ApiError(
+                422,
+                "future_observation",
+                "La última cosecha y la medición deben ser pasadas o de hoy.",
+            )
         try:
             catalog = approved_catalog(session)
             if catalog and catalog.reviewed_on > today:
@@ -90,4 +103,6 @@ def evaluate(request: Request, response: Response, data: RotationInput):
         climate_source=climate_source,
         alternatives=items,
         warnings=[*warnings, *rank_warnings],
+        regional_notes=regional_notes(data, region),
+        plot_notes=plot_notes(data),
     )

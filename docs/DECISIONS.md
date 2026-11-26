@@ -56,3 +56,14 @@ Prompt de la portada en la herramienta integrada de generación de imágenes.
 ## Simulación de rotaciones
 
 La demostración interactiva usa fixtures TEST generados con las funciones del motor. Las reglas solo se activan en memoria durante la generación. El navegador carga los resultados precalculados en una vista separada del formulario agrícola. El catálogo de la evaluación real exige aprobación y evidencia.
+
+## Mapa de capas y contexto de parcela
+
+- El mapa abre con el encuadre de los tres puntos. Los botones de vista controlan el acercamiento y el regreso al encuadre general. El selector de capas usa un control nativo para manejarlo con teclado y con la interfaz táctil del navegador. Leaflet muestra los créditos de las capas activas y usa los metadatos publicados por cada proveedor. [OpenStreetMap](https://www.openstreetmap.org/copyright) · [Esri satelital](https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=pjson) · [Esri referencia híbrida](https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer?f=pjson) · [Esri topográfico](https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer?f=pjson).
+- La ficha muestra el contexto declarado desde el estado local de React. La respuesta de evaluación conserva su esquema y la API valida el orden de siembra y cosecha cuando se suministran ambas fechas.
+
+## Matriz documental y cuestionario de siembra
+
+Los campos nuevos del asistente se envían como `planting_answers` opcional en la API existente. El perfil de cada cultivo se añade a la tabla actual. El historial declarado, las fechas aproximadas, los resultados de laboratorio que declara el usuario y el clima de NASA POWER tienen procedencias diferenciadas. La evaluación de campo sigue usando las reglas aprobadas. La matriz regional v0.3 se consulta como referencia versionada en borrador y no interviene en la puntuación.
+
+Se conservan las respuestas del asistente en memoria de la página. La URL conserva la localidad y el periodo climático. El backend devuelve versión y trazabilidad de la evaluación. El usuario puede descargar un JSON con entradas estructuradas, resultado y resumen climático, si está disponible. La descarga excluye nombres libres de otros cultivos, notas del suelo y notas históricas y sanitarias. El formulario no requiere una cuenta.

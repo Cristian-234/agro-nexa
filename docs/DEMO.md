@@ -19,20 +19,20 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 Si usas `backend/.venv311`, sustituye `python` por `.\.venv311\Scripts\python.exe`. En Linux/macOS, activa el entorno virtual y usa `export DATABASE_URL=sqlite:///./agronexa-demo.sqlite3`. La descarga inicial necesita acceso HTTPS a NASA POWER. La caché histórica vigente permite repetir las mismas consultas con sus fechas exactas aunque NASA esté temporalmente inaccesible. La pantalla identifica la caché y su antigüedad. Las teselas de OpenStreetMap se solicitan aparte y el selector funciona si fallan. Los [CSV de evidencia y su manifiesto](evidence/phase5/dataset/manifest_2024-01-01_2024-12-31.json) documentan el ensayo registrado.
 
-Si la base de fase 5 ya tiene caché vigente para 2024, conserva esa precarga y aplica `python -m alembic upgrade head` para incorporar la versión `illpa-inia-ilave-v2`. Precarga el segundo intervalo si vas a ensayar la consulta de campaña sin conexión. Para repetir una precarga ya disponible, usa su manifiesto.
+Si la base de fase 5 ya tiene caché vigente para 2024, conserva esa precarga y aplica `python -m alembic upgrade head` para incorporar las referencias versionadas de Ilave y el catálogo de cuatro cultivos. Precarga el segundo intervalo si vas a ensayar la consulta de campaña sin conexión. Para repetir una precarga ya disponible, usa su manifiesto.
 
 En otra terminal, desde la raíz, ejecuta `cd frontend` y `npm run dev`. Abre [AgroNexa](http://localhost:5173). El desarrollo local usa el proxy de Vite hacia Uvicorn. Los pasos para Windows y Linux/macOS están en el [README](../README.md).
 
 ## Recorrido
 
-1. En **Explorar**, selecciona Ilave en el mapa, pulsa **Usar año 2024** y consulta el clima. Revisa el estado de caché, las fechas, unidades, resolución y cobertura.
+1. En **Explorar**, ubica los tres marcadores, selecciona Ilave y pulsa **Usar año 2024**. El selector **Capa del mapa** cambia entre OpenStreetMap y las capas satelital, híbrida y topográfica de Esri. **Acercar a Ilave** y **Ver todas las localidades** cambian la vista de forma explícita. Consulta el clima y revisa el estado de caché, las fechas, unidades, resolución y cobertura.
 2. Abre **Comparar localidad**, añade Urubamba y Chivay y conserva el periodo. Revisa los tres pares y abre la diferencia Ilave − Urubamba.
 3. Vuelve a la exploración, conserva los filtros y vuelve a consultar. Pulsa **Descargar CSV** y verifica las 366 filas de datos y la procedencia.
-4. Abre **Abrir ficha agrícola** desde la exploración. Confirma Ilave y el periodo. Selecciona papa como cultivo anterior y quinua como candidata. Pulsa **Evaluar alternativas** en la ficha básica. La evaluación general muestra **Evidencia insuficiente** porque el catálogo aún carece de una versión aprobada.
-5. Abre **Consultar referencias del INIA** y pulsa **Contrastar con las referencias**. Revisa la evaluación preliminar. Si dispones de datos del lote, puedes declarar el cultivo inmediato, su fecha de cosecha y el cultivar antes de contrastar. Sin historial del mismo lote, el antecedente queda con información insuficiente.
+4. Abre **Abrir ficha agrícola** desde la exploración. Confirma Ilave y el periodo histórico. Avanza por las preguntas del terreno, elige papa como cultivo anterior y quinua como próxima siembra. Puedes declarar fechas exactas o meses aproximados. Revisa las respuestas y pulsa **Analizar mi próxima siembra**. Abre un criterio de la matriz regional y revisa el clima de NASA POWER. En **Ver detalle del motor de evaluación** se ve la abstención por falta de reglas aprobadas.
+5. Abre **Consultar referencias del INIA** y pulsa **Contrastar con las referencias**. Revisa la evaluación preliminar. Abre **¿Por qué aparece este resultado?** para ver la fuente, la sección y el ámbito. El contraste de secuencia necesita el historial inmediato fechado y el cultivar Illpa INIA confirmado.
 6. En **Clima histórico de campaña en Ilave**, consulta del 1 de octubre de 2023 al 30 de abril de 2024. Esta ventana de demostración cruza dos años. Revisa media, precipitación, días con mínima ≤ 0 °C, cobertura por variable y procedencia. Es un intervalo meteorológico de ejemplo independiente de los resultados de la ficha.
 
-En **Inicio**, **Explorar datos climáticos** abre el mapa. En móvil, el botón **Abrir menú** permite navegar entre módulos y Escape cierra el menú. En la ficha agrícola puedes revisar los datos antes de evaluar y volver a editarlos desde **Evaluación y resultados**.
+En **Inicio**, **Planificar mi siembra** abre el asistente y **Explorar datos climáticos** abre el mapa. En móvil, **Abrir menú** permite navegar entre módulos y Escape cierra el menú. En el asistente, **Todavía no lo decido** permite revisar las cuatro alternativas y **Editar mis respuestas** recupera la ficha ingresada.
 
 ## Simulación del motor de rotaciones
 

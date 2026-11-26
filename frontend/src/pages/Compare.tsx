@@ -54,7 +54,9 @@ function CompareResults({ data, locations }: { data: MonthlyComparison; location
               <div><dt>Temperatura media</dt><dd>{number(temperature.value)} <small>{unit(temperature.unit)}</small><span>{number(temperature.coverage_pct)} % de cobertura</span></dd></div>
               <div><dt>{indicatorName('accumulated_precipitation', rain)}</dt><dd>{number(rain.value)} <small>{unit(rain.unit)}</small><span>{number(rain.coverage_pct)} % de cobertura</span></dd></div>
             </dl>
-            <Provenance source={item.source} period={item.period} />
+            <details className="rotation-criterion"><summary>Ver fuente y cobertura</summary>
+              <Provenance source={item.source} period={item.period} />
+            </details>
           </article>
         })}
       </div>
@@ -83,9 +85,8 @@ function CompareResults({ data, locations }: { data: MonthlyComparison; location
           </table>
         </TableDetails>
       </>}
-      <section className="panel table-card comparison-indicators" aria-labelledby="indicator-comparison">
-        <header className="card-heading"><h3 id="indicator-comparison">Indicadores por localidad</h3>
-          <p>Cada valor incluye la cobertura y los días válidos del periodo.</p></header>
+      <details className="panel table-card comparison-indicators">
+        <summary>Ver todos los indicadores por localidad</summary>
         <div className="table-scroll" role="region" tabIndex={0} aria-label="Tabla de indicadores por localidad">
           <table>
             <thead><tr><th scope="col">Indicador</th>{series.map(item => <th scope="col" key={item.key}>{item.label}</th>)}</tr></thead>
@@ -101,7 +102,7 @@ function CompareResults({ data, locations }: { data: MonthlyComparison; location
             </tr>)}</tbody>
           </table>
         </div>
-      </section>
+      </details>
       <section className="difference-stack" aria-labelledby="pair-heading">
         <header><h3 id="pair-heading">Diferencias entre localidades</h3>
           <p>Se resta la segunda localidad de la primera. Las diferencias de medias y conteos usan fechas válidas comunes.</p></header>
@@ -165,7 +166,10 @@ export function Compare({ locations }: { locations: Location[] }) {
   return (
     <>
       <PageHeading title="Comparar localidades" description="Contrasta hasta tres localidades sobre el mismo periodo histórico." icon="chart" />
-      <form className="panel query-card" noValidate onSubmit={submit}>
+      {result.status === 'ready' && <CompareResults data={result.data} locations={locations} />}
+      <details className="panel compare-query" open={result.status !== 'ready'}>
+        <summary>{result.status === 'ready' ? 'Cambiar localidades o periodo' : 'Elegir localidades y periodo'}</summary>
+      <form className="query-card" noValidate onSubmit={submit}>
         <div className="query-heading"><h2><Icon name="filter" size={17} /> Localidades y periodo común</h2>
           <button type="button" className="text-button" onClick={() => changePeriod(examplePeriod)}>Usar año 2024</button>
         </div>
@@ -185,11 +189,11 @@ export function Compare({ locations }: { locations: Location[] }) {
         </div>
         {error && <p id="filter-error" role="alert" className="notice error">{error}</p>}
       </form>
+      </details>
       {result.status === 'idle' && <p className="notice" role="status">Selecciona las localidades y aplica el mismo periodo para comparar su clima.</p>}
       {result.status === 'loading' && <LoadingSkeleton label="Consultando las localidades en NASA POWER…" />}
       {result.status === 'error' && <div className="notice error"><p role="alert">{result.message}</p>
         <button className="text-button" type="button" onClick={() => submit()}>Reintentar comparación</button></div>}
-      {result.status === 'ready' && <CompareResults data={result.data} locations={locations} />}
     </>
   )
 }

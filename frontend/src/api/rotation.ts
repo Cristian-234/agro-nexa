@@ -1,10 +1,10 @@
 import type { ClimateSource, Period } from './climate'
 import { request } from './request'
 
-export type CropId = 'potato' | 'quinoa'
-export type PreviousCrop = CropId | 'other' | 'unknown'
+export type CropId = string
+export type PreviousCrop = CropId
 export type Irrigation = 'available' | 'limited' | 'none' | 'unknown'
-export type SoilTexture = 'sand' | 'loam' | 'clay' | 'other' | 'unknown'
+export type SoilTexture = 'sand' | 'loam' | 'sandy_loam' | 'clay' | 'other' | 'unknown'
 export type Priority = 'water' | 'soil_conservation' | 'climate_adaptation'
 export type WaterSource = 'canal' | 'pozo' | 'lluvia' | 'mixto' | 'unknown'
 export type SoilFertility = 'high' | 'medium' | 'low' | 'unknown'
@@ -20,6 +20,8 @@ export interface RotationPlotContext {
   last_yield_kg: number | null
   planned_sowing_date: string | null
   planned_harvest_date: string | null
+  sowing_approximate?: boolean
+  harvest_approximate?: boolean
   objective: RotationObjective
   pest_history: string | null
   previous_history: string | null
@@ -30,6 +32,31 @@ export interface Crop {
   name_es: string
   description: string
   source_url: string | null
+  profile?: {
+    scientific_name: string
+    family: string
+    introduction: string
+    icon: string
+    varieties: string[]
+    references: { url: string; title: string; section: string }[]
+    evaluation_status: 'documentary_only'
+  } | null
+}
+
+export type KnownAnswer = 'yes' | 'no' | 'unknown'
+export interface PlantingAnswers {
+  experience: 'first' | 'one_two' | 'three_more' | 'unknown'
+  campaigns: number | null
+  repeated: KnownAnswer
+  consecutive: number | null
+  other_crop: string | null
+  last_harvest: string | null
+  last_harvest_approximate: boolean
+  ponding: 'yes' | 'sometimes' | 'no' | 'unknown'
+  water: 'rain' | 'irrigation' | 'both' | 'unknown'
+  soil_test: KnownAnswer
+  ph_date: string | null
+  ph_method: string | null
 }
 
 export interface RotationInput extends Period {
@@ -42,6 +69,7 @@ export interface RotationInput extends Period {
   soil_notes: string | null
   priorities: Priority[]
   plot_context: RotationPlotContext
+  planting_answers?: PlantingAnswers
 }
 
 export type Criterion = {
@@ -75,6 +103,16 @@ export interface RotationResult {
   min_evidence_coverage: number
   climate_source: ClimateSource | null
   warnings: string[]
+  plot_notes?: { state: 'attention' | 'missing_data'; message: string }[]
+  regional_notes?: {
+    crop_id: CropId
+    state: 'attention' | 'missing_data' | 'reference'
+    message: string
+    matrix_id: string | null
+    matrix_page: number | null
+    version: string
+    sources: { url: string; title: string; section: string }[]
+  }[]
   alternatives: {
     crop_id: CropId
     state: 'insufficient_evidence' | 'restriction_detected' | 'exploratory_comparison'
